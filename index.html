@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EC Fitness - Evidence-Based Personal Training | Dallas, TX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gold: #d4af37;
+            --dark-bg: #1a1a1a;
+            --darker-bg: #000000;
+            --text-light: #ffffff;
+            --text-gray: #b0b0b0;
+            --accent-gradient: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--darker-bg);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background-color: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 2px;
+        }
+
+        .logo-slash {
+            color: var(--text-light);
+        }
+
+        .nav-links {
+            display: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-gold);
+        }
+
+        .mobile-menu-btn {
+            display: block;
+            background: none;
+            border: none;
+            color: var(--primary-gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .hero {
+            margin-top: 70px;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            padding: 2rem 5%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.75));
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-eyebrow {
+            color: var(--primary-gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--accent-gradient);
+            color: var(--darker-bg);
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        section {
+            padding: 5rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-eyebrow {
+            color: var(--primary-gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.75rem, 5vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        .section-intro {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-bottom: 3rem;
+            max-width: 800px;
+            line-height: 1.8;
+        }
+
+        .differentiators-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .diff-card {
+            background-color: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            padding: 2rem;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .diff-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .diff-card h3 {
+            color: var(--primary-gold);
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .diff-card p {
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .service-card {
+            background-color: var(--dark-bg);
+            border-left: 4px solid var(--primary-gold);
+            padding: 2.5rem 2rem;
+        }
+
+        .service-number {
+            color: var(--primary-gold);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .service-card p {
+            color: var(--text-gray);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .service-features {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .service-features li {
+            color: var(--text-gray);
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .service-features li:before {
+            content: "→";
+            color: var(--primary-gold);
+            font-weight: 700;
+            margin-right: 0.75rem;
+        }
+
+        .credentials {
+            background-color: var(--dark-bg);
+            padding: 5rem 5%;
+        }
+
+        .credentials-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .credentials-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .cert-badge {
+            background: var(--accent-gradient);
+            color: var(--darker-bg);
+            padding: 0.5rem 1rem;
+            display: inline-block;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-section {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(244, 208, 63, 0.05) 100%);
+            padding: 5rem 5%;
+        }
+
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--primary-gold);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            background-color: rgba(26, 26, 26, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: var(--text-light);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent-gradient);
+            color: var(--darker-bg);
+            padding: 1.25rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        footer {
+            background-color: var(--darker-bg);
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+            padding: 3rem 5%;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .footer-tagline {
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .footer-info {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+
+        .footer-info a {
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-gray);
+            font-size: 0.85rem;
+        }
+
+        /* Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .chatbot-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .chatbot-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+        }
+
+        .chatbot-button svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--darker-bg);
+        }
+
+        .chatbot-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            max-width: calc(100vw - 40px);
+            height: 500px;
+            max-height: calc(100vh - 120px);
+            background-color: var(--dark-bg);
+            border: 2px solid var(--primary-gold);
+            border-radius: 12px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .chatbot-window.active {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chatbot-header {
+            background: var(--accent-gradient);
+            color: var(--darker-bg);
+            padding: 1rem;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: var(--darker-bg);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chatbot-message {
+            display: flex;
+            gap: 0.5rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chatbot-message.bot {
+            justify-content: flex-start;
+        }
+
+        .chatbot-message.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .bot .message-bubble {
+            background-color: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--text-light);
+        }
+
+        .user .message-bubble {
+            background: var(--accent-gradient);
+            color: var(--darker-bg);
+            font-weight: 500;
+        }
+
+        .chatbot-options {
+            padding: 0.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .chatbot-option-btn {
+            background-color: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .chatbot-option-btn:hover {
+            background-color: rgba(212, 175, 55, 0.2);
+            transform: translateX(5px);
+        }
+
+        .chatbot-input-container {
+            padding: 1rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            background-color: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--text-light);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        .chatbot-input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+
+        .chatbot-send {
+            background: var(--accent-gradient);
+            border: none;
+            color: var(--darker-bg);
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: transform 0.3s;
+        }
+
+        .chatbot-send:hover {
+            transform: scale(1.05);
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 0.75rem 1rem;
+            background-color: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-gold);
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .mobile-menu-btn {
+                display: none;
+            }
+
+            .nav-links {
+                display: flex;
+            }
+
+            .differentiators-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .credentials-grid {
+                grid-template-columns: 2fr 1fr;
+                align-items: start;
+            }
+
+            .chatbot-window {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 120px);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .differentiators-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            section {
+                padding: 6rem 5%;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"><span class="logo-slash">//</span>EC FITNESS</div>
+            <div class="nav-links">
+                <a href="#approach">Approach</a>
+                <a href="#services">Services</a>
+                <a href="#credentials">About</a>
+                <a href="booking.html">Book Session</a>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <video class="hero-video-bg" autoplay loop muted playsinline>
+            <source src="hero-video.mp4" type="video/mp4">
+        </video>
+        
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content">
+            <div class="hero-eyebrow">Science-Driven Personal Training</div>
+            <h1>Train a Body That Supports Your Ambitions and Goals</h1>
+            <p class="hero-subtitle">Evidence-based training for busy students and professionals in Dallas. No trends. No guesswork. Just intelligent programming that produces measurable results.</p>
+            <a href="booking.html" class="cta-button">Book Consultation</a>
+        </div>
+    </section>
+
+    <section id="approach">
+        <div class="section-eyebrow">The EC Difference</div>
+        <h2 class="section-title">Evidence-Based, Not Trend-Based</h2>
+        <p class="section-intro">Fitness trends cycle. Human physiology does not. Every training plan at EC Fitness is grounded in established principles of exercise science: progressive overload, mechanical tension, energy system development, neuromuscular adaptation, and recovery management.</p>
+
+        <div class="differentiators-grid">
+            <div class="diff-card">
+                <h3>Biomechanics First</h3>
+                <p>Your journey begins with a comprehensive movement and lifestyle assessment. We evaluate joint mobility, stability patterns, strength asymmetries, and movement mechanics under load. Poor movement patterns are corrected before intensity is added.</p>
+            </div>
+
+            <div class="diff-card">
+                <h3>Structured Progression</h3>
+                <p>You're not randomly "working hard." You're following a periodized progression model designed to build measurable strength, improve body composition, and enhance work capacity over 3-4 month training phases.</p>
+            </div>
+
+            <div class="diff-card">
+                <h3>Built for Real Schedules</h3>
+                <p>Time is limited. Energy is limited. Your training should respect that. Programs are optimized for efficient sessions in campus gyms, apartment facilities, or minimal equipment settings.</p>
+            </div>
+
+            <div class="diff-card">
+                <h3>Physiology Over Punishment</h3>
+                <p>Fat loss requires a caloric deficit, but how you train determines what you lose. Intelligent programming preserves lean mass, maintains metabolic rate, and improves work capacity—not just a lower scale number.</p>
+            </div>
+
+            <div class="diff-card">
+                <h3>Longevity Focused</h3>
+                <p>We build usable mobility—mobility that holds up when you lift, run, or live. Corrective work, controlled strength training, and ground-based movement systems reduce injury risk and build a body that lasts.</p>
+            </div>
+
+            <div class="diff-card">
+                <h3>Dallas Native Insight</h3>
+                <p>As a Dallas native, I understand the local environment, community needs, and fitness landscape. EC Fitness is committed to serving our hometown with accessible, high-quality training.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="section-eyebrow">Services</div>
+        <h2 class="section-title">Comprehensive Training Solutions</h2>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-number">01</div>
+                <h3>One-on-One Personal Training</h3>
+                <p>Individualized coaching at nearby off-campus locations. Every session is designed around your movement assessment, recovery capacity, and specific goals.</p>
+                <ul class="service-features">
+                    <li>Comprehensive movement screening</li>
+                    <li>Customized periodized programming</li>
+                    <li>Form coaching and progression tracking</li>
+                    <li>Flexible scheduling for students and professionals</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <div class="service-number">02</div>
+                <h3>Subscription-Based Program Design</h3>
+                <p>Structured 3-4 month training programs for independent training. Designed for campus gyms, apartment facilities, or minimal equipment.</p>
+                <ul class="service-features">
+                    <li>Exact sets, reps, and progression protocols</li>
+                    <li>Optimized efficient sessions</li>
+                    <li>Regular accountability check-ins</li>
+                    <li>Programming adjusted to your feedback</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <div class="service-number">03</div>
+                <h3>Group Fitness Instruction</h3>
+                <p>Contracted group training for organizations and communities. Minimum one month advance booking required.</p>
+                <ul class="service-features">
+                    <li>Scalable programming for mixed abilities</li>
+                    <li>Focus on functional movement patterns</li>
+                    <li>Team building and accountability culture</li>
+                    <li>Flexible location arrangements</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <div class="service-number">04</div>
+                <h3>Goal-Setting Consultations</h3>
+                <p>Strategic planning sessions to clarify your objectives and design a realistic pathway to achieve them.</p>
+                <ul class="service-features">
+                    <li>Objective assessment and goal clarification</li>
+                    <li>Training strategy development</li>
+                    <li>Lifestyle and recovery optimization</li>
+                    <li>No-commitment consultation available</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="credentials" class="credentials">
+        <div class="credentials-content">
+            <div class="section-eyebrow">About Edgar Cruz</div>
+            <h2 class="section-title">Built on Science, Refined by Experience</h2>
+            
+            <div class="credentials-grid">
+                <div>
+                    <p style="color: var(--text-gray); margin-bottom: 1.5rem; line-height: 1.8;">
+                        EC Fitness is a data-driven personal training practice founded by Dallas native Edgar Cruz. At its core is one belief: intelligent training changes more than your body — it changes how you move through your life.
+                    </p>
+                    
+                    <p style="color: var(--text-gray); margin-bottom: 1.5rem; line-height: 1.8;">
+                        Edgar is a National Academy of Sports Medicine (NASM) Certified Personal Trainer with a Senior Fitness Specialization, a StrongFirst Bodyweight Specialist, and an Animal Flow Certified instructor. His training philosophy integrates biomechanics, strength science, motor control, and progressive conditioning into individualized programs that evolve as his clients do.
+                    </p>
+
+                    <p style="color: var(--text-gray); margin-bottom: 1.5rem; line-height: 1.8;">
+                        He approaches coaching with the understanding that the human body is built to move — to squat, hinge, push, pull, carry, rotate, accelerate, and decelerate. When those foundational patterns are trained with precision, strength improves, muscle develops, fat loss becomes sustainable, and resilience increases.
+                    </p>
+
+                    <p style="color: var(--text-gray); margin-bottom: 2rem; line-height: 1.8;">
+                        Edgar's work is not built around trends or fads. It is built around principles:
+                    </p>
+
+                    <ul style="list-style: none; padding-left: 0; margin-bottom: 2rem;">
+                        <li style="color: var(--text-gray); padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                            <span style="position: absolute; left: 0; color: var(--primary-gold);">•</span>
+                            Progressive overload.
+                        </li>
+                        <li style="color: var(--text-gray); padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                            <span style="position: absolute; left: 0; color: var(--primary-gold);">•</span>
+                            Movement quality.
+                        </li>
+                        <li style="color: var(--text-gray); padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                            <span style="position: absolute; left: 0; color: var(--primary-gold);">•</span>
+                            Energy system development.
+                        </li>
+                        <li style="color: var(--text-gray); padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                            <span style="position: absolute; left: 0; color: var(--primary-gold);">•</span>
+                            Recovery management.
+                        </li>
+                        <li style="color: var(--text-gray); padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                            <span style="position: absolute; left: 0; color: var(--primary-gold);">•</span>
+                            Long-term sustainability.
+                        </li>
+                    </ul>
+
+                    <p style="color: var(--text-gray); margin-bottom: 1.5rem; line-height: 1.8;">
+                        Every client begins with a comprehensive movement and lifestyle assessment to evaluate mobility, stability, asymmetries, posture, and current work capacity. This biomechanics-first approach allows programming to address imbalances, reduce injury risk, and create measurable progress across multiple goals — whether that means weight loss, strength development, muscle growth, improved athletic performance, or enhanced longevity.
+                    </p>
+
+                    <p style="color: var(--text-gray); margin-bottom: 1.5rem; line-height: 1.8;">
+                        Edgar does not believe in pigeonholing his coaching into a single niche. The body does not operate in silos, and neither should training. His experience spans one-on-one personal training, small group instruction, structured program design, and performance-based coaching for individuals of varying ages, backgrounds, and abilities.
+                    </p>
+
+                    <p style="color: var(--text-gray); margin-bottom: 2rem; line-height: 1.8;">
+                        His ongoing commitment to research and continuing education ensures that his methods evolve alongside advancements in sports science and strength and conditioning literature. Fitness is not static, and neither is his practice.
+                    </p>
+
+                    <h3 style="color: var(--primary-gold); font-size: 1.5rem; margin-bottom: 1rem; margin-top: 3rem; font-weight: 700;">Philosophy</h3>
+
+                    <p style="color: var(--text-gray); margin-bottom: 1.5rem; line-height: 1.8;">
+                        The body is an adaptive system. When challenged intelligently, it grows stronger, more capable, and more resilient.
+                    </p>
+
+                    <p style="color: var(--text-gray); margin-bottom: 1.5rem; line-height: 1.8;">
+                        EC Fitness exists to help individuals build that capability — not just for aesthetic goals, but for performance, longevity, and everyday life. Whether you are pursuing fat loss, muscle gain, strength, improved movement quality, or overall health, the objective remains the same: train with purpose, progress with structure, and build a body that supports your ambitions.
+                    </p>
+
+                    <p style="color: var(--text-gray); line-height: 1.8; font-weight: 600;">
+                        You do not need hype.<br>
+                        You need a plan.
+                    </p>
+
+                    <p style="color: var(--text-gray); margin-top: 1rem; line-height: 1.8;">
+                        And a coach who understands how to build one.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary-gold); font-size: 1.1rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">Certifications</h3>
+                    <div class="cert-badge">NASM-CPT</div>
+                    <div class="cert-badge">Senior Fitness Specialist</div>
+                    <div class="cert-badge">StrongFirst Bodyweight</div>
+                    <div class="cert-badge">Animal Flow L1</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact-section">
+        <div class="contact-container">
+            <div class="section-eyebrow">Book Your Consultation</div>
+            <h2 class="section-title">Start Training With Intention</h2>
+            <p class="section-intro">Ready to build strength, improve movement quality, and achieve measurable results? Schedule your initial consultation to discuss your goals and assess if EC Fitness is the right fit.</p>
+
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="goal">Primary Training Goal</label>
+                    <select id="goal" name="goal" required>
+                        <option value="">Select your primary goal...</option>
+                        <option value="fat-loss">Fat Loss / Body Composition</option>
+                        <option value="strength">Build Strength</option>
+                        <option value="muscle">Build Muscle (Hypertrophy)</option>
+                        <option value="movement">Movement Quality / Mobility</option>
+                        <option value="performance">Athletic Performance</option>
+                        <option value="longevity">Longevity / Senior Fitness</option>
+                        <option value="general">General Fitness</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">Training Experience Level</label>
+                    <select id="experience" name="experience" required>
+                        <option value="">Select your experience...</option>
+                        <option value="beginner">Beginner (0-1 years)</option>
+                        <option value="intermediate">Intermediate (1-3 years)</option>
+                        <option value="advanced">Advanced (3+ years)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Tell Me About Your Goals</label>
+                    <textarea id="message" name="message" placeholder="What do you want to achieve? What challenges have you faced with training in the past? What does success look like to you?"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Request Consultation</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo"><span class="logo-slash">//</span>EC FITNESS</div>
+            <p class="footer-tagline">Strength, Conditioning, and Functional Training – training now for the future.</p>
+            
+            <div class="footer-info">
+                <p>📍 Dallas, Texas</p>
+                <p>📧 <a href="mailto:ptwithec@gmail.com">ptwithec@gmail.com</a></p>
+                <p>📞 <a href="tel:972-408-5053">972-408-5053</a></p>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 EC Fitness. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <button class="chatbot-button" id="chatbotToggle" aria-label="Open chat">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                <path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+            </svg>
+        </button>
+
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <h3>EC FITNESS CHAT</h3>
+                <button class="chatbot-close" id="chatbotClose" aria-label="Close chat">&times;</button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chatbot-message bot">
+                    <div class="message-bubble">
+                        Hi! I'm here to help you learn more about EC Fitness. What would you like to know?
+                    </div>
+                </div>
+            </div>
+
+            <div class="chatbot-options" id="chatbotOptions">
+                <button class="chatbot-option-btn" data-question="services">What services do you offer?</button>
+                <button class="chatbot-option-btn" data-question="pricing">What are your rates?</button>
+                <button class="chatbot-option-btn" data-question="credentials">Tell me about Edgar's credentials</button>
+                <button class="chatbot-option-btn" data-question="location">Where are you located?</button>
+                <button class="chatbot-option-btn" data-question="booking">How do I book a session?</button>
+            </div>
+
+            <div class="chatbot-input-container">
+                <input 
+                    type="text" 
+                    class="chatbot-input" 
+                    id="chatbotInput" 
+                    placeholder="Type your question..."
+                    aria-label="Chat input"
+                >
+                <button class="chatbot-send" id="chatbotSend" aria-label="Send message">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chatbot functionality
+        const chatbotToggle = document.getElementById('chatbotToggle');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const chatbotClose = document.getElementById('chatbotClose');
+        const chatbotMessages = document.getElementById('chatbotMessages');
+        const chatbotOptions = document.getElementById('chatbotOptions');
+        const chatbotInput = document.getElementById('chatbotInput');
+        const chatbotSend = document.getElementById('chatbotSend');
+
+        const responses = {
+            services: "EC Fitness offers four main services:\n\n1. One-on-One Personal Training - Individualized coaching with comprehensive movement screening\n2. Subscription-Based Program Design - Structured 3-4 month programs for independent training\n3. Group Fitness Instruction - Contracted group training (minimum 1 month advance booking)\n4. Goal-Setting Consultations - Strategic planning sessions for your fitness journey\n\nWould you like to know more about any specific service?",
+            
+            pricing: "I offer customized pricing based on your specific needs and training frequency. The best way to discuss rates is during a free initial consultation where we can assess your goals and create a personalized plan.\n\nWould you like to book a consultation?",
+            
+            credentials: "Edgar Cruz is:\n• NASM Certified Personal Trainer (CPT)\n• Senior Fitness Specialist\n• StrongFirst Bodyweight Specialist\n• Animal Flow L1 Certified Instructor\n\nHis training philosophy integrates biomechanics, strength science, motor control, and progressive conditioning into individualized programs. All methods are evidence-based and grounded in sports science research.",
+            
+            location: "EC Fitness is based in Dallas, Texas. Training sessions are held at nearby off-campus facilities. The exact location is provided after booking to ensure convenience for your schedule.\n\nVirtual consultations are also available!",
+            
+            booking: "Ready to start? You can book your initial consultation directly through our booking page. This 60-75 minute session includes:\n\n• Comprehensive movement screening\n• Goal clarification\n• Training strategy discussion\n• Q&A about programs\n\nWould you like me to take you to the booking page?",
+            
+            default: "That's a great question! For detailed information, I recommend:\n\n1. Booking a free consultation to discuss your specific needs\n2. Emailing Edgar directly at ptwithec@gmail.com\n3. Calling 972-408-5053\n\nIs there anything else I can help with?"
+        };
+
+        chatbotToggle.addEventListener('click', () => {
+            chatbotWindow.classList.toggle('active');
+        });
+
+        chatbotClose.addEventListener('click', () => {
+            chatbotWindow.classList.remove('active');
+        });
+
+        chatbotOptions.addEventListener('click', (e) => {
+            if (e.target.classList.contains('chatbot-option-btn')) {
+                const question = e.target.dataset.question;
+                const questionText = e.target.textContent;
+                
+                addMessage(questionText, 'user');
+                showTypingIndicator();
+                
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    addMessage(responses[question] || responses.default, 'bot');
+                    
+                    if (question === 'booking') {
+                        setTimeout(() => {
+                            addBookingButton();
+                        }, 500);
+                    }
+                }, 1000);
+            }
+        });
+
+        function handleSendMessage() {
+            const message = chatbotInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            chatbotInput.value = '';
+            
+            showTypingIndicator();
+            
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = findBestResponse(message);
+                addMessage(response, 'bot');
+            }, 1000);
+        }
+
+        chatbotSend.addEventListener('click', handleSendMessage);
+        chatbotInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSendMessage();
+            }
+        });
+
+        function findBestResponse(message) {
+            const lower = message.toLowerCase();
+            
+            if (lower.includes('service') || lower.includes('offer') || lower.includes('do you do')) {
+                return responses.services;
+            } else if (lower.includes('price') || lower.includes('cost') || lower.includes('rate') || lower.includes('fee')) {
+                return responses.pricing;
+            } else if (lower.includes('credential') || lower.includes('certif') || lower.includes('qualification') || lower.includes('edgar')) {
+                return responses.credentials;
+            } else if (lower.includes('where') || lower.includes('location') || lower.includes('address')) {
+                return responses.location;
+            } else if (lower.includes('book') || lower.includes('schedule') || lower.includes('appointment') || lower.includes('consultation')) {
+                setTimeout(() => addBookingButton(), 500);
+                return responses.booking;
+            } else {
+                return responses.default;
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chatbot-message ${sender}`;
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.textContent = text;
+            
+            messageDiv.appendChild(bubbleDiv);
+            chatbotMessages.appendChild(messageDiv);
+            
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chatbot-message bot';
+            typingDiv.id = 'typingIndicator';
+            
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            
+            typingDiv.appendChild(indicator);
+            chatbotMessages.appendChild(typingDiv);
+            
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function addBookingButton() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chatbot-message bot';
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.innerHTML = '<a href="booking.html" style="color: var(--primary-gold); text-decoration: underline; font-weight: 700;">Click here to book your consultation →</a>';
+            
+            messageDiv.appendChild(bubbleDiv);
+            chatbotMessages.appendChild(messageDiv);
+            
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your interest! Your consultation request has been received. Edgar will contact you within 24-48 hours to schedule your initial assessment.');
+            this.reset();
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
