@@ -986,7 +986,7 @@
             
             <div class="footer-info">
                 <p>📍 Dallas, Texas</p>
-                <p>📧 <a href="mailto:ptwithec@gmail.com">ptwithec@gmail.com</a></p>
+                <p>📧 <a href="/cdn-cgi/l/email-protection#146460637d607c7177547379757d783a777b79"><span class="__cf_email__" data-cfemail="f58581829c819d9096b59298949c99db969a98">[email&#160;protected]</span></a></p>
                 <p>📞 <a href="tel:972-408-5053">972-408-5053</a></p>
             </div>
 
@@ -1040,7 +1040,7 @@
         </div>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Chatbot functionality
         const chatbotToggle = document.getElementById('chatbotToggle');
         const chatbotWindow = document.getElementById('chatbotWindow');
@@ -1200,6 +1200,31 @@
                         behavior: 'smooth',
                         block: 'start'
                     });
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            navLinks.style.flexDirection = 'column';
+            navLinks.style.position = 'absolute';
+            navLinks.style.top = '100%';
+            navLinks.style.left = '0';
+            navLinks.style.right = '0';
+            navLinks.style.backgroundColor = 'var(--dark-bg)';
+            navLinks.style.padding = '1rem';
+            navLinks.style.borderTop = '1px solid rgba(212, 175, 55, 0.2)';
+        });
+
+        // Close mobile menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    navLinks.style.display = 'none';
                 }
             });
         });
