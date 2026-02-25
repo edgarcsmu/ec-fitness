@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Client Intake Portal | EC Fitness</title>
-<!-- EmailJS SDK — sends 2FA codes and intake notifications to trainer -->
+<!-- EmailJS SDK — sends intake notifications to trainer -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
   (function(){ emailjs.init({ publicKey: 'YOUR_EMAILJS_PUBLIC_KEY' }); })();
 </script>
+<!-- Supabase SDK — auth + database -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ═══════════════════════════════════════════
    DESIGN SYSTEM — mirrors index.html exactly
@@ -614,7 +616,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
       <div class="entry-card">
         <a href="index.html" class="entry-logo" style="text-decoration:none; display:block;"><span style="color:#fff">//</span>EC FITNESS</a>
         <div class="entry-sub">Two-Step Verification</div>
-        <p class="tfa-hint">A 6-digit code was sent to your email. Enter it below to access the trainer dashboard.</p>
+        <p class="tfa-hint" id="tfaHint">A 6-digit code was sent to your email. Enter it below to access the trainer dashboard.</p>
         <div class="tfa-row" id="tfaRow">
           <input class="tfa-digit" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]*" />
           <input class="tfa-digit" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]*" />
@@ -1169,10 +1171,14 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
 
 <!-- ═══════════════ SCRIPTS ═══════════════ -->
 <script>
-// ── CREDENTIALS (store securely in production — env vars / backend) ──
-const TRAINER_EMAIL = 'ptwithec@gmail.com';
-const TRAINER_PASS  = 'ECfitness2026!';
-let tfaCode = '';
+// ── SUPABASE CLIENT ───────────────────────
+const { createClient } = supabase;
+const sb = createClient(
+  'https://oxcuqmjiaarlhakbjwcv.supabase.co',
+  'sb_publishable_6f-AY69d0xZGNCMBcZ41Kw_S-RDJagN'
+);
+
+let pendingEmail = ''; // holds email between password step and OTP step
 
 // ── VIEW + SCREEN MANAGEMENT ──────────────
 function showView(v) {
@@ -1186,76 +1192,117 @@ function showScreen(id) {
   });
 }
 
-// ── AUTH ──────────────────────────────────
-function attemptLogin() {
-  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+// ── AUTH — Supabase powered ───────────────
+async function attemptLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
   const pw    = document.getElementById('loginPw').value;
   const err   = document.getElementById('loginErr');
-  if (email === TRAINER_EMAIL.toLowerCase() && pw === TRAINER_PASS) {
-    err.style.display = 'none';
-    // Generate 2FA code and (in production) send via email API
-    tfaCode = Math.floor(100000 + Math.random() * 900000).toString();
-    // Send 2FA code to trainer email via EmailJS
-    emailjs.send('YOUR_SERVICE_ID', 'YOUR_2FA_TEMPLATE_ID', {
-      to_email: TRAINER_EMAIL,
-      code:     tfaCode
-    }).catch(err => console.error('EmailJS 2FA send failed:', err));
-    showScreen('tfaScreen');
-    setTimeout(() => document.querySelector('.tfa-digit').focus(), 100);
-  } else {
+  err.style.display = 'none';
+
+  // Step 1: verify password against Supabase (server-side — no hardcoded credentials)
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+
+  if (error) {
+    err.textContent = 'Incorrect email or password.';
     err.style.display = 'block';
     document.getElementById('loginPw').value = '';
+    return;
   }
+
+  // Step 2: sign out immediately — we'll re-authenticate after OTP verification
+  await sb.auth.signOut();
+  pendingEmail = email;
+
+  // Step 3: send OTP email as second factor via Supabase
+  await sb.auth.signInWithOtp({
+    email,
+    options: { shouldCreateUser: false }
+  });
+
+  showScreen('tfaScreen');
+  document.getElementById('tfaHint').textContent =
+    `A 6-digit code was sent to ${email}. Enter it below.`;
+  setTimeout(() => document.querySelector('.tfa-digit').focus(), 100);
 }
 
-function verifyTFA() {
-  const entered = Array.from(document.querySelectorAll('.tfa-digit')).map(d => d.value).join('');
-  const err = document.getElementById('tfaErr');
-  if (entered === tfaCode || entered === '123456') { // '123456' = demo fallback
-    err.style.display = 'none';
-    showView('trainer');
-    loadDemo();
-  } else {
+async function verifyTFA() {
+  const token = Array.from(document.querySelectorAll('.tfa-digit')).map(d => d.value).join('');
+  const err   = document.getElementById('tfaErr');
+  err.style.display = 'none';
+
+  // Verify OTP against Supabase — this creates the real authenticated session
+  const { data, error } = await sb.auth.verifyOtp({
+    email: pendingEmail,
+    token,
+    type: 'email'
+  });
+
+  if (error) {
+    err.textContent = 'Incorrect or expired code. Try again or resend.';
     err.style.display = 'block';
     document.querySelectorAll('.tfa-digit').forEach(d => d.value = '');
     document.querySelector('.tfa-digit').focus();
+    return;
   }
+
+  // Authenticated — load dashboard
+  showView('trainer');
+  await loadSubmissions();
 }
 
-function resendCode() {
-  tfaCode = Math.floor(100000 + Math.random() * 900000).toString();
-  emailjs.send('YOUR_SERVICE_ID', 'YOUR_2FA_TEMPLATE_ID', {
-    to_email: TRAINER_EMAIL,
-    code:     tfaCode
-  }).then(() => alert('A new code has been sent to your email.'))
-    .catch(() => alert('Could not resend — check your EmailJS setup.'));
+async function resendCode() {
+  await sb.auth.signInWithOtp({
+    email: pendingEmail,
+    options: { shouldCreateUser: false }
+  });
+  alert('A new code has been sent to ' + pendingEmail);
 }
 
-function logout() {
+async function logout() {
+  await sb.auth.signOut();
   showView('entry');
   showScreen('choiceScreen');
   document.getElementById('loginEmail').value = '';
   document.getElementById('loginPw').value = '';
   document.querySelectorAll('.tfa-digit').forEach(d => d.value = '');
+  pendingEmail = '';
+}
+
+// ── SESSION GUARD — redirect if not logged in ──
+async function checkSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  // If someone navigates directly to #trainer without logging in, send them back
+  if (!session && document.getElementById('view-trainer').classList.contains('active')) {
+    showView('entry');
+    showScreen('choiceScreen');
+  }
 }
 
 // 2FA auto-advance
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.tfa-digit').forEach((d, i, all) => {
-    d.addEventListener('input', () => { if (d.value && i < all.length - 1) all[i+1].focus(); });
-    d.addEventListener('keydown', e => { if (e.key === 'Backspace' && !d.value && i > 0) all[i-1].focus(); });
+    d.addEventListener('input', () => {
+      d.value = d.value.replace(/\D/,''); // numbers only
+      if (d.value && i < all.length - 1) all[i+1].focus();
+    });
+    d.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !d.value && i > 0) all[i-1].focus();
+    });
   });
 
-  // Default today's date
   document.getElementById('parq-date').value = new Date().toISOString().split('T')[0];
   updateStepper();
+  await checkSession();
 
-  // Mobile menu
   document.getElementById('menuBtn').addEventListener('click', () => {
     const nl = document.getElementById('navLinks');
     const open = nl.style.display === 'flex';
     nl.style.display = open ? 'none' : 'flex';
-    if (!open) Object.assign(nl.style, { flexDirection:'column', position:'absolute', top:'100%', left:'0', right:'0', backgroundColor:'var(--dark-bg)', padding:'1rem', borderTop:'1px solid var(--border-gold)', zIndex:'999' });
+    if (!open) Object.assign(nl.style, {
+      flexDirection:'column', position:'absolute', top:'100%',
+      left:'0', right:'0', backgroundColor:'var(--dark-bg)',
+      padding:'1rem', borderTop:'1px solid var(--border-gold)', zIndex:'999'
+    });
   });
 });
 
@@ -1290,24 +1337,72 @@ function prevStep() {
   if (step > 0) { step--; showSection(step); updateStepper(); window.scrollTo(0,0); }
 }
 
-function submitIntake() {
+async function submitIntake() {
   document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
   document.getElementById('form-nav').style.display = 'none';
   document.getElementById('stepper').style.display = 'none';
   document.getElementById('submit-screen').classList.add('active');
   window.scrollTo(0,0);
-  notifyTrainer();
-}
 
-// Trainer notification on intake submit
-function notifyTrainer() {
-  const client = document.getElementById('parq-name').value || 'A new client';
-  const age    = document.getElementById('hh-age').value   || 'not provided';
+  // Collect all form data
+  const clientName = document.getElementById('parq-name').value || 'Unknown';
+  const clientAge  = document.getElementById('hh-age').value   || '';
+
+  const payload = {
+    client_name: clientName,
+    client_age:  clientAge,
+    parq_answers: {
+      q1: ynState.q1, q2: ynState.q2, q3: ynState.q3,
+      q4: ynState.q4, q4_detail: document.getElementById('q4-detail').value,
+      q5: ynState.q5, q5_detail: document.getElementById('q5-detail').value,
+      q6: ynState.q6, q6_detail: document.getElementById('q6-detail').value,
+      q7: ynState.q7,
+      signed_name: clientName,
+      signed_date: document.getElementById('parq-date').value
+    },
+    health_history: {
+      occupation:    document.getElementById('hh-occ').value,
+      exercise:      document.getElementById('hh-exercise').value,
+      days_per_week: document.getElementById('hh-days').value,
+      alcohol:       document.getElementById('hh-alc').value,
+      stress_mgmt:   document.getElementById('hh-stress').value,
+      injuries:      document.getElementById('hh-inj').value,
+      surgeries:     document.getElementById('hh-surg').value,
+      conditions:    document.getElementById('hh-cond').value,
+      medications:   document.getElementById('hh-meds').value,
+      recreation:    document.getElementById('hh-rec').value
+    },
+    body_composition: {
+      height_in:  document.getElementById('bc-ht').value,
+      weight_lbs: document.getElementById('bc-wt').value,
+      bmi:        document.getElementById('bc-bmi').value,
+      waist:      document.getElementById('c-waist').value,
+      hips:       document.getElementById('c-hips').value,
+      whr:        document.getElementById('bc-whr').value,
+      rhr:        document.getElementById('bc-rhr').value,
+      bp:         document.getElementById('bc-bp').value,
+      hrmax:      document.getElementById('bc-hrmax').value
+    },
+    goals: {
+      primary_goal:  document.getElementById('goal-main').value,
+      timeline:      document.getElementById('goal-time').value,
+      availability:  document.getElementById('goal-avail').value,
+      constraints:   document.getElementById('goal-constraints').value
+    },
+    assessment_notes: document.getElementById('notes').value,
+    status: 'new'
+  };
+
+  // Save to Supabase
+  const { error } = await sb.from('intake_submissions').insert([payload]);
+  if (error) console.error('Supabase insert error:', error.message);
+
+  // Email notification to trainer
   emailjs.send('YOUR_SERVICE_ID', 'YOUR_INTAKE_TEMPLATE_ID', {
-    client_name: client,
-    client_age:  age,
-    message:     client + ' has completed their EC Fitness intake form. Log in to the trainer dashboard to review their biomechanical data and generate their AI analysis.'
-  }).catch(err => console.error('EmailJS notification failed:', err));
+    client_name: clientName,
+    client_age:  clientAge || 'not provided',
+    message:     clientName + ' has completed their EC Fitness intake form. Log in to your trainer dashboard to review their data and generate their AI analysis.'
+  }).catch(e => console.error('EmailJS error:', e));
 }
 
 // ── FORM INTERACTIONS ─────────────────────
@@ -1383,12 +1478,135 @@ const demo = {
   goals:[{label:'Lower Back Pain Relief',score:9},{label:'Weight Loss',score:8},{label:'Health Improvement',score:7},{label:'Muscle Gain',score:5}]
 };
 
-function loadDemo() { renderDash(demo); }
+// ── DASHBOARD — load real submissions from Supabase ──
+async function loadSubmissions() {
+  const { data: submissions, error } = await sb
+    .from('intake_submissions')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Could not load submissions:', error.message);
+    loadDemo(); // fall back to demo if DB not set up yet
+    return;
+  }
+
+  const bar = document.getElementById('client-bar');
+  // Clear existing chips except hint
+  bar.innerHTML = `
+    <div class="client-chip active" onclick="selectClient(this,'demo')" id="chip-demo">
+      <div class="client-avatar">JM</div>
+      <span class="client-name">Jordan M. · Demo</span>
+      <div class="client-dot" style="background:var(--amber);"></div>
+    </div>`;
+
+  if (submissions && submissions.length > 0) {
+    submissions.forEach(s => {
+      const initials = (s.client_name || 'CL').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+      const chip = document.createElement('div');
+      chip.className = 'client-chip';
+      chip.id = 'chip-' + s.id;
+      chip.innerHTML = `
+        <div class="client-avatar">${initials}</div>
+        <span class="client-name">${s.client_name || 'Client'} · ${new Date(s.created_at).toLocaleDateString()}</span>
+        <div class="client-dot" style="background:${s.status==='new'?'var(--primary-gold)':'var(--green)'};"></div>`;
+      chip.onclick = () => { selectClient(chip, s.id); renderRealClient(s); };
+      bar.appendChild(chip);
+    });
+    // Auto-load the most recent real submission
+    selectClient(bar.children[1], submissions[0].id);
+    renderRealClient(submissions[0]);
+  } else {
+    bar.innerHTML += `<span class="chip-hint">← No submissions yet · Demo client shown</span>`;
+    loadDemo();
+  }
+}
+
+function renderRealClient(s) {
+  const goals = s.goals || {};
+  const hh    = s.health_history || {};
+  const bc    = s.body_composition || {};
+  const parq  = s.parq_answers || {};
+
+  // Build flag list from PAR-Q and health history
+  const flags = [];
+  if (parq.q1 === 'yes') flags.push({ level:'red',   text:'PAR-Q Q1: Reported heart condition or high blood pressure.', src:'PAR-Q+ 2023 — requires medical clearance before vigorous exercise.' });
+  if (parq.q2 === 'yes') flags.push({ level:'red',   text:'PAR-Q Q2: Chest pain at rest or during activity.', src:'PAR-Q+ 2023 — consult physician before any exercise program.' });
+  if (parq.q4 === 'yes') flags.push({ level:'amber', text:'Chronic medical condition: ' + (parq.q4_detail || 'see intake'), src:'PAR-Q+ 2023 — review follow-up questions with client.' });
+  if (parq.q5 === 'yes') flags.push({ level:'amber', text:'On prescribed medications: ' + (parq.q5_detail || 'see intake'), src:'NASM CPT7 — medications may affect heart rate response and exercise tolerance.' });
+  if (parq.q6 === 'yes') flags.push({ level:'amber', text:'Bone/joint/soft tissue issue: ' + (parq.q6_detail || 'see intake'), src:'NASM CPT7 — corrective protocol required before loading affected area.' });
+  if (hh.injuries)        flags.push({ level:'amber', text:'Past injuries: ' + hh.injuries, src:'Lombardi & Troxel (2003) — injury history is a leading predictor of re-injury.' });
+  if (flags.length === 0) flags.push({ level:'green', text:'PAR-Q+ fully cleared — all general health questions answered NO.', src:'Tharrett & Peterson (IHRSA) — cleared for fitness program initiation.' });
+
+  const flagsHTML = flags.map(f => `
+    <div class="flag-item ${f.level}">
+      <div class="flag-dot ${f.level}"></div>
+      <div><div class="flag-text">${f.text}</div><div class="flag-src">${f.src}</div></div>
+    </div>`).join('');
+
+  const goalsHTML = goals.primary_goal ? `
+    <div style="font-size:0.95rem; color:var(--text-light); line-height:1.75; margin-bottom:1rem;">${goals.primary_goal}</div>
+    <div style="font-size:0.85rem; color:var(--text-gray);">Timeline: ${goals.timeline || 'Not specified'}</div>
+    <div style="font-size:0.85rem; color:var(--text-gray);">Availability: ${goals.availability || 'Not specified'}</div>
+    <div style="font-size:0.85rem; color:var(--text-gray); margin-top:0.5rem;">Constraints: ${goals.constraints || 'None noted'}</div>` :
+    '<div style="color:var(--text-gray);">No goals data</div>';
+
+  const vitalsHTML = `
+    <table class="findings-table">
+      <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Height</td><td>${bc.height_in ? bc.height_in + ' in' : '—'}</td></tr>
+        <tr><td>Weight</td><td>${bc.weight_lbs ? bc.weight_lbs + ' lbs' : '—'}</td></tr>
+        <tr><td>BMI</td><td>${bc.bmi || '—'}</td></tr>
+        <tr><td>Waist-to-Hip Ratio</td><td>${bc.whr || '—'}</td></tr>
+        <tr><td>Resting Heart Rate</td><td>${bc.rhr ? bc.rhr + ' bpm' : '—'}</td></tr>
+        <tr><td>Blood Pressure</td><td>${bc.bp || '—'}</td></tr>
+        <tr><td>HRmax Estimate</td><td>${bc.hrmax || '—'}</td></tr>
+      </tbody>
+    </table>`;
+
+  document.getElementById('dash-grid').innerHTML = `
+    <div class="dash-card wide">
+      <div class="card-label">Safety &amp; Risk Assessment
+        <span class="badge ${flags.some(f=>f.level==='red')?'badge-red':flags.some(f=>f.level==='amber')?'badge-amber':'badge-green'}">
+          ${flags.filter(f=>f.level!=='green').length} FLAG${flags.filter(f=>f.level!=='green').length!==1?'S':''}
+        </span>
+      </div>
+      <div class="flag-list">${flagsHTML}</div>
+    </div>
+    <div class="dash-card">
+      <div class="card-label">Body Composition &amp; Vitals</div>
+      ${vitalsHTML}
+    </div>
+    <div class="dash-card full">
+      <div class="card-label">Client Goals &amp; Availability</div>
+      ${goalsHTML}
+    </div>
+    <div class="dash-card full">
+      <div class="card-label">Medical &amp; Lifestyle Notes</div>
+      <table class="findings-table">
+        <thead><tr><th>Category</th><th>Client Response</th></tr></thead>
+        <tbody>
+          <tr><td>Occupation</td><td>${hh.occupation || '—'}</td></tr>
+          <tr><td>Current Exercise</td><td>${hh.exercise || '—'}</td></tr>
+          <tr><td>Past Injuries</td><td>${hh.injuries || 'None reported'}</td></tr>
+          <tr><td>Past Surgeries</td><td>${hh.surgeries || 'None reported'}</td></tr>
+          <tr><td>Health Conditions</td><td>${hh.conditions || 'None reported'}</td></tr>
+          <tr><td>Medications</td><td>${hh.medications || 'None reported'}</td></tr>
+          <tr><td>Assessment Notes</td><td>${s.assessment_notes || 'None'}</td></tr>
+        </tbody>
+      </table>
+    </div>`;
+
+  // Mark as reviewed in Supabase
+  sb.from('intake_submissions').update({ status: 'reviewed' }).eq('id', s.id).then(() => {});
+}
 
 function selectClient(chip, id) {
   document.querySelectorAll('.client-chip').forEach(c => c.classList.remove('active'));
   chip.classList.add('active');
   if (id === 'demo') renderDash(demo);
+  // real clients are handled by their chip.onclick in loadSubmissions()
 }
 
 function renderDash(c) {
