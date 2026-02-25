@@ -1703,7 +1703,7 @@ async function generateAI() {
   const prompt = currentClientData ? buildRealPrompt(currentClientData) : buildDemoPrompt();
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("https://corsproxy.io/?https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1720,9 +1720,9 @@ async function generateAI() {
     const out = data.content.map(i => i.text || '').join('\n');
     text.classList.remove('loading-dots');
     text.textContent = out;
-  } catch {
+  } catch(e) {
     text.classList.remove('loading-dots');
-    text.textContent = '[API unavailable — deploy to live site to activate AI analysis.]';
+    text.textContent = '[Error: ' + e.message + ']';
   }
 
   spin.style.display = 'none';
