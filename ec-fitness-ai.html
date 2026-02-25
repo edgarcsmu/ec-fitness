@@ -251,17 +251,17 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
   text-transform: uppercase; letter-spacing: 1.5px;
   margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;
 }
-.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; }
+.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 .guide-col h4 {
   font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: 1px; color: var(--text-light);
   margin-bottom: 0.85rem; padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border-sub);
 }
-.guide-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-.guide-list li { display: flex; gap: 10px; font-size: 0.95rem; color: var(--text-gray); line-height: 1.55; }
-.guide-list li::before { content:"→"; color: var(--primary-gold); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
-.guide-list li strong { color: var(--text-light); }
+.guide-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.guide-list li { display: flex; gap: 10px; font-size: 0.92rem; color: var(--text-gray); line-height: 1.5; align-items: baseline; }
+.guide-list li::before { content:"→"; color: var(--primary-gold); font-weight: 700; flex-shrink: 0; }
+.guide-list li strong { color: var(--text-light); white-space: nowrap; }
 .phone-tip {
   display: flex; gap: 12px; align-items: flex-start;
   margin-top: 1.5rem; padding: 1rem 1.25rem;
@@ -916,11 +916,11 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
       <div class="video-guide">
         <div class="video-guide-title">📋 How to Record Your Videos</div>
         <div class="guide-grid">
-          <div class="guide-col">
+        <div class="guide-col">
             <h4>Before You Record</h4>
             <ul class="guide-list">
               <li>Wear <strong>form-fitting clothing</strong> — shorts and a fitted top so your joints are visible</li>
-              <li>Prop your phone against a wall, chair, or use a stand — <strong>keep it steady</strong></li>
+              <li><strong>Prop your phone</strong> against a wall, chair, or use a stand — keep it steady</li>
               <li>Make sure your <strong>full body is in frame</strong> from head to toe</li>
               <li>Film in <strong>good lighting</strong> — near a window or outdoors works great</li>
             </ul>
@@ -930,7 +930,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
             <ul class="guide-list">
               <li><strong>Front view:</strong> Camera faces you directly — shows knee and foot alignment</li>
               <li><strong>Side view:</strong> Camera is at your side — shows back, hip, and shoulder position</li>
-              <li>Most assessments need <strong>both angles</strong>: film front first, then side</li>
+              <li>Most assessments need <strong>both angles</strong> — film front first, then side</li>
               <li>Keep each clip <strong>15–30 seconds</strong>, about <strong>5 reps</strong> per movement</li>
             </ul>
           </div>
