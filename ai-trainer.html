@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biomechanic Analysis & Research-Grounded Fitness Programming | EC Fitness</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gold: #d4af37;
+            --dark-bg: #1a1a1a;
+            --darker-bg: #000000;
+            --text-light: #ffffff;
+            --text-gray: #b0b0b0;
+            --accent-gradient: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--darker-bg);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── HEADER (exact match to index.html) ── */
+        header {
+            background-color: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .logo-slash { color: var(--text-light); }
+
+        .nav-links {
+            display: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--primary-gold); }
+        .nav-links a.active { color: var(--primary-gold); }
+
+        .mobile-menu-btn {
+            display: block;
+            background: none;
+            border: none;
+            color: var(--primary-gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            margin-top: 70px;
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            padding: 4rem 5%;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 60% at 100% 50%, rgba(212, 175, 55, 0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 0% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 50%),
+                var(--darker-bg);
+            z-index: 0;
+        }
+
+        /* Decorative grid lines */
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(212,175,55,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(212,175,55,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary-gold);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-tag::before {
+            content: '◆';
+            font-size: 0.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .gold { color: var(--primary-gold); }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.15rem);
+            color: var(--text-gray);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            max-width: 620px;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--accent-gradient);
+            color: var(--darker-bg);
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .cta-outline {
+            display: inline-block;
+            background: none;
+            color: var(--text-light);
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: border-color 0.3s, color 0.3s;
+            text-decoration: none;
+        }
+
+        .cta-outline:hover {
+            border-color: var(--primary-gold);
+            color: var(--primary-gold);
+        }
+
+        /* Hero stats row */
+        .hero-stats {
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            border-left: 2px solid var(--primary-gold);
+            padding-left: 1rem;
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-gold);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ── WHAT IS THIS ── */
+        .explainer {
+            background: var(--dark-bg);
+            padding: 5rem 5%;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .explainer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-eyebrow {
+            color: var(--primary-gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.75rem, 4vw, 2.75rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.15;
+        }
+
+        .section-intro {
+            font-size: 1.05rem;
+            color: var(--text-gray);
+            max-width: 780px;
+            line-height: 1.85;
+            margin-bottom: 3rem;
+        }
+
+        /* Problem / Solution split */
+        .ps-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            margin-bottom: 3rem;
+        }
+
+        .ps-card {
+            background: var(--darker-bg);
+            padding: 2.5rem 2rem;
+        }
+
+        .ps-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .ps-label.problem { color: #e05252; }
+        .ps-label.solution { color: var(--primary-gold); }
+
+        .ps-list {
+            list-style: none;
+        }
+
+        .ps-list li {
+            color: var(--text-gray);
+            padding: 0.6rem 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .ps-list li:last-child { border-bottom: none; }
+
+        .ps-list li .icon { flex-shrink: 0; }
+        .ps-card.problem-card .icon { color: #e05252; }
+        .ps-card.solution-card .icon { color: var(--primary-gold); }
+
+        /* ── HOW IT WORKS ── */
+        .how-it-works {
+            padding: 5rem 5%;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .how-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2px;
+            margin-top: 3rem;
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .step-card {
+            background: var(--darker-bg);
+            padding: 2.5rem 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            transition: background 0.3s;
+        }
+
+        .step-card:hover {
+            background: rgba(212, 175, 55, 0.04);
+        }
+
+        .step-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: rgba(212, 175, 55, 0.15);
+            line-height: 1;
+            flex-shrink: 0;
+            width: 60px;
+            transition: color 0.3s;
+        }
+
+        .step-card:hover .step-number {
+            color: rgba(212, 175, 55, 0.4);
+        }
+
+        .step-content h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .step-content p {
+            color: var(--text-gray);
+            line-height: 1.75;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .step-tag {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: var(--primary-gold);
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ── PRICING ── */
+        .pricing-section {
+            background: var(--dark-bg);
+            padding: 5rem 5%;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .pricing-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--darker-bg);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            padding: 3rem 2.5rem;
+            position: relative;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .pricing-card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-4px);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary-gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.06) 0%, var(--darker-bg) 100%);
+        }
+
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -1px;
+            left: 2.5rem;
+            background: var(--accent-gradient);
+            color: var(--darker-bg);
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            padding: 4px 14px;
+        }
+
+        .pricing-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary-gold);
+            margin-bottom: 1rem;
+        }
+
+        .pricing-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-desc {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary-gold);
+            line-height: 1;
+        }
+
+        .price-symbol {
+            font-size: 1.5rem;
+            color: var(--primary-gold);
+            font-weight: 700;
+        }
+
+        .price-note {
+            color: var(--text-gray);
+            font-size: 0.82rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .price-note strong { color: var(--primary-gold); }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2.5rem;
+        }
+
+        .pricing-features li {
+            color: var(--text-gray);
+            padding: 0.65rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            gap: 0.75rem;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .pricing-features li:last-child { border-bottom: none; }
+        .pricing-features li::before { content: "→"; color: var(--primary-gold); font-weight: 700; flex-shrink: 0; }
+
+        .pricing-variables {
+            background: rgba(212, 175, 55, 0.05);
+            border-left: 3px solid var(--primary-gold);
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-variables p {
+            font-size: 0.82rem;
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        .pricing-variables strong { color: var(--text-light); }
+
+        /* ── WHAT YOU GET ── */
+        .deliverables {
+            padding: 5rem 5%;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .deliverables-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .deliverables-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .deliverable-card {
+            background: var(--dark-bg);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            padding: 2rem;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .deliverable-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .deliverable-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .deliverable-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+        }
+
+        .deliverable-card p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            line-height: 1.75;
+        }
+
+        /* ── WHO IS THIS FOR ── */
+        .for-who {
+            background: var(--dark-bg);
+            padding: 5rem 5%;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .for-who-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .persona-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .persona-card {
+            background: var(--darker-bg);
+            border-left: 4px solid var(--primary-gold);
+            padding: 2rem;
+        }
+
+        .persona-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .persona-card p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            line-height: 1.75;
+        }
+
+        /* ── CREDIT NOTE ── */
+        .credit-banner {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.03) 100%);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 3.5rem 5%;
+        }
+
+        .credit-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .credit-heading {
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .credit-heading .gold { color: var(--primary-gold); }
+
+        .credit-body {
+            color: var(--text-gray);
+            font-size: 1rem;
+            line-height: 1.85;
+            max-width: 700px;
+        }
+
+        /* ── CTA SECTION ── */
+        .final-cta {
+            padding: 6rem 5%;
+            text-align: center;
+        }
+
+        .final-cta-inner {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .final-cta h2 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .final-cta h2 .gold { color: var(--primary-gold); }
+
+        .final-cta p {
+            color: var(--text-gray);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+        }
+
+        .final-cta .payment-note {
+            margin-top: 1.5rem;
+            font-size: 0.82rem;
+            color: var(--text-gray);
+        }
+
+        .final-cta .payment-note a {
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        /* ── FOOTER (exact match) ── */
+        footer {
+            background-color: var(--darker-bg);
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+            padding: 3rem 5%;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .footer-tagline {
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .footer-info {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+
+        .footer-info a { color: var(--primary-gold); text-decoration: none; }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-gray);
+            font-size: 0.85rem;
+        }
+
+        /* ── CHATBOT (exact match) ── */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .chatbot-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .chatbot-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+        }
+
+        .chatbot-button svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--darker-bg);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (min-width: 768px) {
+            .mobile-menu-btn { display: none; }
+            .nav-links { display: flex; }
+
+            .hero-content { grid-template-columns: 1fr 1fr; align-items: center; }
+            .ps-grid { grid-template-columns: 1fr 1fr; }
+            .steps-grid { grid-template-columns: 1fr; }
+            .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+            .deliverables-grid { grid-template-columns: repeat(2, 1fr); }
+            .persona-grid { grid-template-columns: repeat(2, 1fr); }
+            .credit-inner { flex-direction: row; align-items: center; justify-content: space-between; }
+        }
+
+        @media (min-width: 1024px) {
+            .steps-grid { grid-template-columns: 1fr; }
+            .deliverables-grid { grid-template-columns: repeat(3, 1fr); }
+            .persona-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body>
+
+    <!-- ── HEADER ── -->
+    <header>
+        <nav>
+            <a href="index.html" class="logo"><span class="logo-slash">//</span>EC FITNESS</a>
+            <div class="nav-links">
+                <a href="index.html#approach">Approach</a>
+                <a href="index.html#services">Services</a>
+                <a href="index.html#credentials">About</a>
+                <a href="ai-trainer.html" class="active">AI Training</a>
+                <a href="booking.html">Book Session</a>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </nav>
+    </header>
+
+    <!-- ── HERO ── -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div>
+                <div class="hero-tag">Biomechanic Analysis & Research-Grounded Fitness Programming</div>
+                <h1>
+                    Your program,<br>
+                    <span class="gold">built before</span><br>
+                    we ever meet.
+                </h1>
+                <p class="hero-subtitle">
+                    Skip the guesswork session. Complete your full intake and movement assessments on your own time. Edgar reviews the AI-generated analysis and delivers a custom program built specifically for your body mechanics and goals — all for a flat $200.
+                </p>
+                <div class="hero-ctas">
+                    <a href="ec-fitness-ai.html" class="cta-button">Start Your Intake →</a>
+                    <a href="#how-it-works" class="cta-outline">See How It Works</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">$200</div>
+                        <div class="stat-label">Flat Program Fee</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Personalized</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">$0</div>
+                        <div class="stat-label">Applied to 1:1 Training</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right side: The old way vs EC way -->
+            <div>
+                <div class="ps-grid">
+                    <div class="ps-card problem-card">
+                        <div class="ps-label problem">The Old Way</div>
+                        <ul class="ps-list">
+                            <li><span class="icon">✗</span> Session 1 is spent on paperwork and introductions</li>
+                            <li><span class="icon">✗</span> You pay for assessment time, not training time</li>
+                            <li><span class="icon">✗</span> Generic questions, surface-level data</li>
+                            <li><span class="icon">✗</span> Trainer walks in cold — no pre-session analysis</li>
+                            <li><span class="icon">✗</span> Program written after your first session, not before</li>
+                        </ul>
+                    </div>
+                    <div class="ps-card solution-card">
+                        <div class="ps-label solution">The EC Way</div>
+                        <ul class="ps-list">
+                            <li><span class="icon">→</span> Complete your full intake at home, on your schedule</li>
+                            <li><span class="icon">→</span> AI pre-processes your biomechanical data</li>
+                            <li><span class="icon">→</span> Edgar reviews clinical findings before you arrive</li>
+                            <li><span class="icon">→</span> Session 1 is pure training — not consultation</li>
+                            <li><span class="icon">→</span> Written program delivered to you within 48 hours</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ── -->
+    <div class="how-it-works" id="how-it-works">
+        <div class="how-inner">
+            <div class="section-eyebrow">The Process</div>
+            <h2 class="section-title">Five Steps to a Fully Custom Program</h2>
+            <p class="section-intro">
+                This approach is built around a simple idea: the more we know about your body before session one, the better every session becomes. This process replaces the traditional "get-to-know-you" consultation with a thorough, AI-assisted intake that Edgar reviews personally.
+            </p>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h3>Complete Your Health Screening</h3>
+                        <p>You'll complete the full 2023 PAR-Q+ Physical Activity Readiness Questionnaire — the same clinical standard used by certified fitness professionals and medical providers. Any flags are reviewed by Edgar before programming begins.</p>
+                        <span class="step-tag">PAR-Q+ · Medical Clearance</span>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h3>Fill Out Your Lifestyle & Health History</h3>
+                        <p>A comprehensive questionnaire covering your exercise history, diet, sleep, stress, occupation, past injuries, and surgeries. This is the same NASM CPT7 Lifestyle and Health History form used in professional settings — your answers directly inform your corrective exercise protocol.</p>
+                        <span class="step-tag">NASM CPT7 Standard</span>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h3>Self-Report Your Body Composition</h3>
+                        <p>Height, weight, circumference measurements, resting heart rate, and blood pressure (if known). BMI and Waist-to-Hip Ratio are calculated automatically. This data establishes your baseline and helps Edgar track measurable progress over time.</p>
+                        <span class="step-tag">Body Composition Baseline</span>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">04</div>
+                    <div class="step-content">
+                        <h3>Submit Your Movement Assessment Videos</h3>
+                        <p>Record and upload short videos of your Overhead Squat (OHSA), Single-Leg Squat, Pushing, Pulling, and Cardio assessments. Edgar uses these to identify movement compensations — things like knee valgus, excessive forward lean, or shoulder elevation — and maps them directly to your corrective exercise plan using the NASM biomechanics framework.</p>
+                        <span class="step-tag">OHSA · SLSA · Push/Pull · Cardio</span>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">05</div>
+                    <div class="step-content">
+                        <h3>Edgar Analyzes, Then Builds Your Program</h3>
+                        <p>Once submitted, Edgar reviews an AI-generated pre-session briefing covering your risk flags, biomechanical findings, corrective exercise priorities, and behavior stage. He then writes your fully custom program: warm-up, corrective protocol, strength progression, and cardio prescription — all based on your specific body mechanics and goals.</p>
+                        <span class="step-tag">Delivered Within 48 Hours</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PRICING ── -->
+    <div class="pricing-section" id="pricing">
+        <div class="pricing-inner">
+            <div class="section-eyebrow">Pricing</div>
+            <h2 class="section-title">Simple, Transparent Options</h2>
+            <p class="section-intro">
+                No hidden fees. No subscription traps. Pay once, get a program built for your body.
+            </p>
+
+            <div class="pricing-grid">
+
+                <!-- Option 1: Remote Program -->
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">AI-Assisted Program Design</div>
+                    <div class="pricing-name">Remote Custom Program</div>
+                    <div class="pricing-desc">Complete the full intake portal. Edgar reviews your AI-generated analysis and delivers a written program built around your body mechanics, goals, and timeline. No in-person session required.</div>
+                    <div class="price-row">
+                        <span class="price-symbol">$</span>
+                        <span class="price-amount">200</span>
+                    </div>
+                    <div class="price-note">
+                        One-time fee. Payment via invoice or Venmo after intake is submitted.<br>
+                        <strong>Program delivered within 48 hours of payment.</strong>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Full PAR-Q+ health screening review</li>
+                        <li>NASM-standard movement assessment analysis</li>
+                        <li>AI biomechanical findings briefing</li>
+                        <li>Custom corrective exercise protocol (Inhibit → Lengthen → Activate → Integrate)</li>
+                        <li>Periodized strength & conditioning program</li>
+                        <li>Cardio prescription based on your fitness level</li>
+                        <li>Written program delivered as PDF + digital format</li>
+                        <li>One follow-up email Q&A included</li>
+                    </ul>
+                    <div class="pricing-variables">
+                        <p><strong>Pricing note:</strong> The $200 flat rate applies to standard cases. Pricing may vary based on complexity of goals, timeline urgency, or significant body mechanics concerns that require additional program depth. Edgar will communicate this before you pay.</p>
+                    </div>
+                    <a href="ec-fitness-ai.html" class="cta-button" style="display:block; text-align:center;">Start Your Intake →</a>
+                </div>
+
+                <!-- Option 2: In-Person + Credit -->
+                <div class="pricing-card">
+                    <div class="pricing-badge">Best Value · In-Person Training</div>
+                    <div class="pricing-name">Personal Training Package</div>
+                    <div class="pricing-desc">Want to train with Edgar in person? Complete the intake first, then your $200 applies as a credit toward your personal training package. You skip the consultation session — and go straight to training from day one.</div>
+                    <div class="price-row">
+                        <span class="price-symbol">$</span>
+                        <span class="price-amount">200</span>
+                    </div>
+                    <div class="price-note">
+                        Applied as credit toward your 1:1 training package.<br>
+                        <strong>Session 1 starts as training — not consultation.</strong>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>Everything in the Remote Program</li>
+                        <li>$200 fully credited to your training package</li>
+                        <li>First session begins with training — not paperwork</li>
+                        <li>Edgar has already reviewed your full movement profile</li>
+                        <li>Program is live and loaded before you walk in</li>
+                        <li>Ongoing program adjustments based on session performance</li>
+                        <li>Direct access to Edgar between sessions</li>
+                    </ul>
+                    <div class="pricing-variables">
+                        <p><strong>How it works:</strong> Complete the intake portal, pay the $200 program fee, then book your first training session. The fee is applied as a credit — you only pay the difference on your training package.</p>
+                    </div>
+                    <a href="booking.html" class="cta-button" style="display:block; text-align:center; background: none; border: 1px solid var(--primary-gold); color: var(--primary-gold);">Book In-Person Training →</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ── WHAT YOU GET ── -->
+    <div class="deliverables" id="deliverables">
+        <div class="deliverables-inner">
+            <div class="section-eyebrow">Your Deliverables</div>
+            <h2 class="section-title">What's in Your Custom Program</h2>
+            <p class="section-intro">Every program is built from scratch using your intake data. These are the components Edgar writes for you.</p>
+
+            <div class="deliverables-grid">
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">🔬</div>
+                    <h3>Biomechanical Assessment Report</h3>
+                    <p>A written summary of the movement compensations identified in your assessment videos, including which muscles are overactive and underactive — and why it matters for your program.</p>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">🛡️</div>
+                    <h3>Corrective Exercise Protocol</h3>
+                    <p>A structured 4-stage corrective sequence: Inhibit (foam rolling), Lengthen (stretching), Activate (isolation work), and Integrate (compound movement). Built specifically for your identified compensations using the NASM CEX Continuum.</p>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">📈</div>
+                    <h3>Periodized Strength Program</h3>
+                    <p>Exact exercises, sets, reps, rest periods, and tempo — organized into a progressive training phase that builds toward your specific goal (strength, hypertrophy, fat loss, or performance).</p>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">❤️</div>
+                    <h3>Cardio Prescription</h3>
+                    <p>Based on your cardio assessment results and fitness level, Edgar prescribes a cardio strategy — including modality, intensity zones, frequency, and duration — that supports your goal without undermining your recovery.</p>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">🎯</div>
+                    <h3>Goal & Behavior Coaching Notes</h3>
+                    <p>Short-term milestones built using the Bandura proximal goal framework — concrete, achievable weekly targets that build momentum toward your bigger objective. Includes coaching notes on your behavior readiness stage.</p>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">⚠️</div>
+                    <h3>Risk & Safety Flags</h3>
+                    <p>Any medical, cardiovascular, or biomechanical flags identified in your intake — with specific guidance on load management, exercise modifications, and when to consult a physician before proceeding.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── WHO IS THIS FOR ── -->
+    <div class="for-who">
+        <div class="for-who-inner">
+            <div class="section-eyebrow">Who This Is For</div>
+            <h2 class="section-title">Built for People with Goals and Limited Time</h2>
+            <p class="section-intro">This service was designed specifically for clients who want a serious, expert-built program — without waiting for a traditional consultation to get started.</p>
+
+            <div class="persona-grid">
+                <div class="persona-card">
+                    <h3>The Busy Professional</h3>
+                    <p>You have 3–4 days a week to train, limited time to spare, and no patience for guesswork. You want a program you can trust, built by someone who actually looked at your movement data — not a generic template.</p>
+                </div>
+
+                <div class="persona-card">
+                    <h3>The Graduate Student</h3>
+                    <p>You're training in a campus gym or apartment facility with minimal equipment. You need a structured, efficient plan that fits your schedule and budget — and doesn't require you to figure it out yourself.</p>
+                </div>
+
+                <div class="persona-card">
+                    <h3>The Self-Directed Trainer</h3>
+                    <p>You've been training for years but suspect your movement patterns are holding you back. You want a professional eye on your mechanics and a corrective protocol that addresses the root cause — not just the symptoms.</p>
+                </div>
+
+                <div class="persona-card">
+                    <h3>The Returning Client</h3>
+                    <p>You're coming back after an injury, a long break, or a plateau. You want a smart re-entry — one that accounts for where your body is right now, not where it used to be.</p>
+                </div>
+
+                <div class="persona-card">
+                    <h3>The Pre-Training Planner</h3>
+                    <p>You want to do the work upfront. Get the intake done, get your program in hand, and show up to your first session already knowing the plan — so every minute you pay for is training time.</p>
+                </div>
+
+                <div class="persona-card">
+                    <h3>Out-of-Area Clients</h3>
+                    <p>You're not in Dallas — or you travel too often for consistent in-person training. The remote program gives you access to EC Fitness expertise regardless of where you train.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CREDIT BANNER ── -->
+    <div class="credit-banner">
+        <div class="credit-inner">
+            <div>
+                <h2 class="credit-heading">
+                    Want to train with Edgar in person?<br>
+                    <span class="gold">Your $200 comes with you.</span>
+                </h2>
+            </div>
+            <div style="max-width: 520px;">
+                <p class="credit-body">
+                    The $200 program fee applies as a full credit toward any EC Fitness personal training package. If you start remote and decide you want in-person coaching, you're not paying twice. Your intake data, your biomechanical analysis, and your program come with you — and session one starts as real training, not orientation.
+                </p>
+                <br>
+                <a href="booking.html" class="cta-button">Explore 1:1 Training →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FINAL CTA ── -->
+    <div class="final-cta">
+        <div class="final-cta-inner">
+            <h2>
+                Ready to make<br>
+                fitness <span class="gold">easy?</span>
+            </h2>
+            <p>
+                Start your intake today. Complete it at your own pace. Edgar reviews your full movement profile and delivers a program built for your body — so when you're ready to train, you're already ahead.
+            </p>
+            <a href="ec-fitness-ai.html" class="cta-button" style="font-size: 1.1rem; padding: 1.25rem 3rem;">
+                Begin Intake Portal →
+            </a>
+            <div class="payment-note">
+                Payment is collected after intake submission via invoice or Venmo.<br>
+                Questions? Email <a href="mailto:ptwithec@gmail.com">ptwithec@gmail.com</a> or call <a href="tel:972-408-5053">972-408-5053</a>.
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo"><span class="logo-slash">//</span>EC FITNESS</div>
+            <p class="footer-tagline">Strength, Conditioning, and Functional Training – training now for the future.</p>
+            <div class="footer-info">
+                <p>📍 Dallas, Texas</p>
+                <p>📧 <a href="mailto:ptwithec@gmail.com">ptwithec@gmail.com</a></p>
+                <p>📞 <a href="tel:972-408-5053">972-408-5053</a></p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 EC Fitness. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ── CHATBOT BUTTON (matches index.html) ── -->
+    <div class="chatbot-container">
+        <button class="chatbot-button" onclick="window.location.href='index.html'" aria-label="Back to home chat">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                <path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // Mobile menu
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            const isOpen = navLinks.style.display === 'flex';
+            navLinks.style.display = isOpen ? 'none' : 'flex';
+            if (!isOpen) {
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.right = '0';
+                navLinks.style.backgroundColor = 'var(--dark-bg)';
+                navLinks.style.padding = '1rem';
+                navLinks.style.borderTop = '1px solid rgba(212, 175, 55, 0.2)';
+                navLinks.style.zIndex = '999';
+            }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) navLinks.style.display = 'none';
+            });
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+
+</body>
+</html>
