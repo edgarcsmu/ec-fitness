@@ -2,536 +2,641 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EC Fitness AI Specialist</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Client Intake Portal | EC Fitness</title>
+<!-- EmailJS SDK — sends 2FA codes and intake notifications to trainer -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  (function(){ emailjs.init({ publicKey: 'YOUR_EMAILJS_PUBLIC_KEY' }); })();
+</script>
 <style>
-  :root {
-    --black: #0a0a0a;
-    --white: #f5f2ee;
-    --cream: #ede9e3;
-    --accent: #c8f542;
-    --accent2: #ff6b35;
-    --gray: #6b6b6b;
-    --border: #2a2a2a;
-    --card: #141414;
-    --red-flag: #ff3b3b;
-    --yellow-flag: #ffd93d;
-    --green-flag: #6bcb77;
-  }
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — mirrors index.html exactly
+═══════════════════════════════════════════ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary-gold: #d4af37;
+  --dark-bg:      #1a1a1a;
+  --darker-bg:    #000000;
+  --text-light:   #ffffff;
+  --text-gray:    #b0b0b0;
+  --accent-grad:  linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+  --border-gold:  rgba(212,175,55,0.15);
+  --border-sub:   rgba(255,255,255,0.06);
+  --red:   #e05252;
+  --green: #52b788;
+  --amber: #f4a261;
+}
 
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+html { scroll-behavior: smooth; }
 
-  /* ─── NAV ─── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 40px;
-    background: rgba(10,10,10,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800; font-size: 1.1rem;
-    letter-spacing: 0.08em;
-  }
-  .nav-logo span { color: var(--accent); }
-  .nav-tabs { display: flex; gap: 4px; }
-  .nav-tab {
-    padding: 8px 18px; border: 1px solid transparent;
-    background: none; color: var(--gray); cursor: pointer;
-    font-family: 'DM Mono', monospace; font-size: 0.72rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    transition: all 0.2s; border-radius: 2px;
-  }
-  .nav-tab.active {
-    color: var(--accent); border-color: var(--accent);
-    background: rgba(200,245,66,0.06);
-  }
-  .nav-tab:hover:not(.active) { color: var(--white); border-color: var(--border); }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--darker-bg);
+  color: var(--text-light);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
 
-  /* ─── VIEWS ─── */
-  .view { display: none; padding-top: 80px; min-height: 100vh; }
-  .view.active { display: block; }
+/* ── HEADER ─────────────────────────────── */
+header {
+  background: rgba(26,26,26,0.97);
+  backdrop-filter: blur(10px);
+  position: fixed; width: 100%; top: 0; z-index: 1000;
+  border-bottom: 1px solid var(--border-gold);
+}
+nav {
+  max-width: 1400px; margin: 0 auto;
+  padding: 1rem 5%;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.logo { font-size: 1.5rem; font-weight: 700; color: var(--primary-gold); letter-spacing: 2px; text-decoration: none; }
+.logo-slash { color: var(--text-light); }
+.nav-links { display: none; gap: 2rem; align-items: center; }
+.nav-links a { color: var(--text-gray); text-decoration: none; font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s; }
+.nav-links a:hover, .nav-links a.active { color: var(--primary-gold); }
+.mobile-menu-btn { display: block; background: none; border: none; color: var(--primary-gold); font-size: 1.5rem; cursor: pointer; }
+@media (min-width: 768px) { .mobile-menu-btn { display: none; } .nav-links { display: flex; } }
 
-  /* ─── HERO ─── */
-  .hero {
-    padding: 80px 40px 60px;
-    border-bottom: 1px solid var(--border);
-    position: relative; overflow: hidden;
-  }
-  .hero::before {
-    content: 'EC';
-    position: absolute; right: -20px; top: -40px;
-    font-family: 'DM Serif Display', serif;
-    font-size: 28vw; color: rgba(200,245,66,0.03);
-    line-height: 1; pointer-events: none; user-select: none;
-  }
-  .hero-label {
-    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 20px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .hero-label::before {
-    content: ''; display: block; width: 30px; height: 1px; background: var(--accent);
-  }
-  .hero h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2.4rem, 6vw, 5rem);
-    line-height: 1.05; max-width: 700px;
-    margin-bottom: 24px;
-  }
-  .hero h1 em { font-style: italic; color: var(--accent); }
-  .hero p {
-    color: var(--gray); max-width: 520px;
-    font-size: 0.82rem; line-height: 1.8;
-  }
+/* ── VIEWS ──────────────────────────────── */
+.view { display: none; padding-top: 70px; min-height: 100vh; }
+.view.active { display: block; }
 
-  /* ─── PROGRESS STEPPER ─── */
-  .stepper {
-    display: flex; align-items: center; gap: 0;
-    padding: 30px 40px;
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-  }
-  .step {
-    display: flex; align-items: center; gap: 12px;
-    flex-shrink: 0;
-  }
-  .step-num {
-    width: 32px; height: 32px; border-radius: 50%;
-    border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem; color: var(--gray);
-    transition: all 0.3s;
-  }
-  .step.active .step-num { border-color: var(--accent); color: var(--accent); background: rgba(200,245,66,0.08); }
-  .step.done .step-num { background: var(--accent); color: var(--black); border-color: var(--accent); }
-  .step-label { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); }
-  .step.active .step-label { color: var(--white); }
-  .step.done .step-label { color: var(--accent); }
-  .step-line { width: 40px; height: 1px; background: var(--border); flex-shrink: 0; margin: 0 4px; }
-  .step.done + .step-line { background: var(--accent); }
+/* ═══════════════════════════════════════════
+   LOGIN / PORTAL ENTRY
+═══════════════════════════════════════════ */
+.portal-entry {
+  min-height: calc(100vh - 70px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 3rem 5%;
+}
+.entry-card {
+  width: 100%; max-width: 480px;
+  background: var(--dark-bg);
+  border: 1px solid var(--border-gold);
+  padding: 3rem 2.5rem;
+}
+.entry-logo { font-size: 1.5rem; font-weight: 700; color: var(--primary-gold); letter-spacing: 2px; text-align: center; margin-bottom: 0.25rem; }
+.entry-sub { font-size: 0.75rem; color: var(--text-gray); text-transform: uppercase; letter-spacing: 2px; text-align: center; margin-bottom: 2.5rem; }
+.entry-divider { text-align: center; font-size: 0.78rem; color: var(--text-gray); margin: 1.5rem 0; position: relative; }
+.entry-divider::before, .entry-divider::after { content:''; display:block; position:absolute; top:50%; width:42%; height:1px; background: var(--border-gold); }
+.entry-divider::before { left:0; } .entry-divider::after { right:0; }
 
-  /* ─── FORM SECTIONS ─── */
-  .form-section { display: none; }
-  .form-section.active { display: block; }
-  .section-wrap { padding: 50px 40px; max-width: 860px; }
-  .section-title {
-    font-family: 'Syne', sans-serif; font-weight: 700;
-    font-size: 1.5rem; margin-bottom: 6px;
-  }
-  .section-subtitle {
-    font-size: 0.74rem; color: var(--gray); margin-bottom: 40px;
-    letter-spacing: 0.05em;
-  }
+/* shared login field */
+.lfield { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.25rem; }
+.lfield label { font-size: 0.78rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary-gold); }
+.lfield input {
+  background: var(--darker-bg); border: 1px solid rgba(212,175,55,0.2);
+  color: var(--text-light); padding: 14px 16px;
+  font-family: inherit; font-size: 1rem; border-radius: 2px; outline: none; width: 100%;
+  transition: border-color 0.2s;
+}
+.lfield input:focus { border-color: var(--primary-gold); }
 
-  /* ─── FORM ELEMENTS ─── */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
-  .form-grid.full { grid-template-columns: 1fr; }
-  .field { display: flex; flex-direction: column; gap: 8px; }
-  .field.span2 { grid-column: span 2; }
-  .field.span3 { grid-column: span 3; }
-  label {
-    font-size: 0.65rem; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--gray);
-  }
-  input, select, textarea {
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--white); padding: 12px 16px;
-    font-family: 'DM Mono', monospace; font-size: 0.82rem;
-    border-radius: 3px; outline: none;
-    transition: border-color 0.2s;
-    width: 100%;
-  }
-  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
-  select option { background: var(--card); }
-  textarea { resize: vertical; min-height: 80px; }
+.login-err { font-size: 0.85rem; color: var(--red); margin-top: 0.75rem; text-align: center; display: none; }
 
-  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
-  .radio-btn {
-    padding: 9px 18px; border: 1px solid var(--border);
-    background: var(--card); color: var(--gray); cursor: pointer;
-    font-family: 'DM Mono', monospace; font-size: 0.72rem;
-    letter-spacing: 0.08em; border-radius: 2px;
-    transition: all 0.15s; user-select: none;
-  }
-  .radio-btn.selected { border-color: var(--accent); color: var(--accent); background: rgba(200,245,66,0.06); }
+/* 2FA digits */
+.tfa-hint { font-size: 0.92rem; color: var(--text-gray); margin-bottom: 1.5rem; line-height: 1.6; text-align: center; }
+.tfa-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 1.5rem; }
+.tfa-digit {
+  width: 52px; height: 60px; text-align: center;
+  font-size: 1.6rem; font-weight: 700;
+  background: var(--darker-bg); border: 1px solid rgba(212,175,55,0.25);
+  color: var(--text-light); border-radius: 3px; outline: none; font-family: inherit;
+  transition: border-color 0.2s;
+}
+.tfa-digit:focus { border-color: var(--primary-gold); }
+.tfa-resend { font-size: 0.82rem; color: var(--text-gray); text-align: center; margin-top: 0.75rem; }
+.tfa-resend a { color: var(--primary-gold); cursor: pointer; }
+@media (max-width:480px) { .tfa-digit { width:42px; height:52px; font-size:1.3rem; } }
 
-  .scale-row { display: flex; align-items: center; gap: 14px; }
-  .scale-row label { white-space: nowrap; min-width: 160px; }
-  input[type=range] {
-    -webkit-appearance: none; padding: 0;
-    height: 3px; background: var(--border); border: none;
-    border-radius: 2px; flex: 1;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 16px; height: 16px;
-    background: var(--accent); border-radius: 50%; cursor: pointer;
-  }
-  .scale-val {
-    font-size: 0.85rem; color: var(--accent);
-    min-width: 28px; text-align: right;
-  }
+/* ═══════════════════════════════════════════
+   CLIENT INTAKE FORM
+═══════════════════════════════════════════ */
 
-  .divider {
-    border: none; border-top: 1px solid var(--border);
-    margin: 36px 0;
-  }
-  .subsection-label {
-    font-family: 'Syne', sans-serif; font-weight: 600;
-    font-size: 0.78rem; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--accent);
-    margin-bottom: 20px; padding-bottom: 10px;
-    border-bottom: 1px solid rgba(200,245,66,0.2);
-  }
+/* Hero */
+.intake-hero {
+  padding: 3.5rem 5% 2.5rem;
+  border-bottom: 1px solid var(--border-gold);
+  background: linear-gradient(135deg, rgba(212,175,55,0.04) 0%, transparent 60%);
+}
+.intake-eyebrow { color: var(--primary-gold); font-size: 0.85rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1rem; }
+.intake-hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.1; margin-bottom: 1rem; letter-spacing: -0.5px; }
+.intake-hero h1 span { color: var(--primary-gold); }
+.intake-hero p { color: var(--text-gray); font-size: 1.05rem; line-height: 1.8; max-width: 560px; }
 
-  /* ─── VIDEO UPLOAD ─── */
-  .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .upload-box {
-    border: 1px dashed var(--border); border-radius: 4px;
-    padding: 30px 20px; text-align: center;
-    cursor: pointer; transition: all 0.2s;
-    position: relative; overflow: hidden;
-  }
-  .upload-box:hover { border-color: var(--accent); background: rgba(200,245,66,0.03); }
-  .upload-box.has-file { border-color: var(--accent); border-style: solid; }
-  .upload-icon { font-size: 2rem; margin-bottom: 12px; }
-  .upload-title {
-    font-family: 'Syne', sans-serif; font-weight: 600;
-    font-size: 0.82rem; margin-bottom: 6px;
-  }
-  .upload-desc { font-size: 0.68rem; color: var(--gray); line-height: 1.6; }
-  .upload-status { font-size: 0.7rem; color: var(--accent); margin-top: 8px; }
-  .upload-box input[type=file] {
-    position: absolute; inset: 0; opacity: 0; cursor: pointer;
-    width: 100%; height: 100%; padding: 0;
-  }
-  .upload-note {
-    font-size: 0.68rem; color: var(--gray);
-    margin-top: 16px; line-height: 1.7;
-    padding: 14px 18px; background: var(--card);
-    border-left: 2px solid var(--accent2);
-  }
+/* Stepper */
+.stepper {
+  display: flex; align-items: center; padding: 1.1rem 5%;
+  border-bottom: 1px solid var(--border-gold);
+  background: var(--dark-bg); overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.step { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.step-num {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; font-weight: 600; color: var(--text-gray);
+  transition: all 0.3s;
+}
+.step.active .step-num { border-color: var(--primary-gold); color: var(--primary-gold); background: rgba(212,175,55,0.1); }
+.step.done .step-num { background: var(--primary-gold); color: #000; border-color: var(--primary-gold); }
+.step-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-gray); white-space: nowrap; }
+.step.active .step-label { color: var(--text-light); font-weight: 600; }
+.step.done .step-label { color: var(--primary-gold); }
+.step-line { width: 30px; height: 1px; background: rgba(255,255,255,0.1); flex-shrink: 0; margin: 0 4px; }
+.step.done + .step-line { background: var(--primary-gold); }
 
-  /* ─── PAR-Q CHECKLIST ─── */
-  .parq-item {
-    display: flex; align-items: flex-start; gap: 16px;
-    padding: 16px 0; border-bottom: 1px solid var(--border);
-  }
-  .parq-item:last-child { border-bottom: none; }
-  .parq-text { flex: 1; font-size: 0.78rem; line-height: 1.7; color: var(--white); }
-  .parq-text strong { color: var(--accent2); }
-  .toggle-yn { display: flex; gap: 6px; flex-shrink: 0; margin-top: 2px; }
-  .yn-btn {
-    padding: 6px 14px; border: 1px solid var(--border);
-    background: var(--card); color: var(--gray); cursor: pointer;
-    font-family: 'DM Mono', monospace; font-size: 0.68rem;
-    letter-spacing: 0.1em; border-radius: 2px; transition: all 0.15s;
-  }
-  .yn-btn.yes.selected { border-color: var(--red-flag); color: var(--red-flag); background: rgba(255,59,59,0.08); }
-  .yn-btn.no.selected { border-color: var(--green-flag); color: var(--green-flag); background: rgba(107,203,119,0.08); }
+/* Section container */
+.form-section { display: none; }
+.form-section.active { display: block; }
+.section-wrap { padding: 2.75rem 5%; max-width: 920px; }
 
-  /* ─── NAVIGATION BUTTONS ─── */
-  .form-nav {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 30px 40px;
-    border-top: 1px solid var(--border);
-    background: rgba(10,10,10,0.6);
-    backdrop-filter: blur(8px);
-    position: sticky; bottom: 0;
-  }
-  .btn {
-    padding: 13px 32px; cursor: pointer;
-    font-family: 'DM Mono', monospace; font-size: 0.75rem;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    border-radius: 2px; transition: all 0.2s; border: 1px solid;
-  }
-  .btn-primary {
-    background: var(--accent); color: var(--black); border-color: var(--accent);
-    font-weight: 500;
-  }
-  .btn-primary:hover { background: #d4ff55; }
-  .btn-secondary { background: none; color: var(--gray); border-color: var(--border); }
-  .btn-secondary:hover { color: var(--white); border-color: var(--white); }
-  .btn-submit {
-    background: var(--accent2); color: var(--white); border-color: var(--accent2);
-    font-weight: 500;
-  }
-  .btn-submit:hover { background: #ff7d4d; }
+.section-eyebrow { color: var(--primary-gold); font-size: 0.82rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.6rem; }
+.section-title { font-size: 1.9rem; font-weight: 800; margin-bottom: 0.4rem; line-height: 1.15; }
+.section-subtitle { font-size: 0.95rem; color: var(--text-gray); margin-bottom: 2.25rem; line-height: 1.65; }
+.subsection-label {
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--primary-gold); margin-bottom: 1.25rem; padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border-gold);
+}
+.divider { border: none; border-top: 1px solid var(--border-sub); margin: 2.25rem 0; }
 
-  /* ─── SUBMISSION SCREEN ─── */
-  .submit-screen {
-    display: none; flex-direction: column; align-items: center;
-    justify-content: center; min-height: 60vh;
-    padding: 60px 40px; text-align: center;
-  }
-  .submit-screen.active { display: flex; }
-  .submit-icon { font-size: 4rem; margin-bottom: 24px; }
-  .submit-screen h2 {
-    font-family: 'DM Serif Display', serif; font-size: 2.5rem;
-    margin-bottom: 14px;
-  }
-  .submit-screen p { color: var(--gray); max-width: 460px; line-height: 1.8; font-size: 0.8rem; }
-  .processing-bar {
-    width: 300px; height: 3px; background: var(--border);
-    border-radius: 2px; margin: 30px auto 0;
-    overflow: hidden;
-  }
-  .processing-fill {
-    height: 100%; background: var(--accent);
-    animation: fill 3s ease-out forwards;
-  }
-  @keyframes fill { from { width: 0; } to { width: 100%; } }
+/* Form grid + fields */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-grid.one { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.span2 { grid-column: span 2; }
+.field.span3 { grid-column: span 3; }
 
-  /* ─── TRAINER DASHBOARD ─── */
-  .dashboard-header {
-    padding: 50px 40px 30px;
-    border-bottom: 1px solid var(--border);
-  }
-  .dash-label {
-    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--accent2); margin-bottom: 12px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .dash-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--accent2); }
-  .dashboard-header h2 {
-    font-family: 'DM Serif Display', serif; font-size: 2.4rem;
-  }
+label { font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary-gold); }
 
-  /* ─── CLIENT SELECTOR ─── */
-  .client-bar {
-    display: flex; align-items: center; gap: 16px;
-    padding: 20px 40px; border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-  }
-  .client-chip {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 18px; border: 1px solid var(--border);
-    border-radius: 100px; cursor: pointer; transition: all 0.2s;
-    flex-shrink: 0;
-  }
-  .client-chip.active { border-color: var(--accent); background: rgba(200,245,66,0.06); }
-  .client-avatar {
-    width: 28px; height: 28px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem; font-weight: 600;
-    background: var(--border);
-  }
-  .client-chip.active .client-avatar { background: var(--accent); color: var(--black); }
-  .client-name { font-size: 0.75rem; }
-  .client-flag {
-    width: 8px; height: 8px; border-radius: 50%;
-  }
+input, select, textarea {
+  background: var(--dark-bg);
+  border: 1px solid rgba(212,175,55,0.2);
+  color: var(--text-light); padding: 14px 16px;
+  font-family: inherit; font-size: 1rem;
+  border-radius: 2px; outline: none; width: 100%;
+  transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--primary-gold); background: rgba(26,26,26,0.9); }
+input::placeholder, textarea::placeholder { color: rgba(176,176,176,0.45); }
+select option { background: var(--dark-bg); }
+textarea { resize: vertical; min-height: 88px; }
+.auto-field { color: var(--primary-gold) !important; cursor: default; }
 
-  /* ─── DASHBOARD GRID ─── */
-  .dash-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto;
-    gap: 1px;
-    background: var(--border);
-    border-top: 1px solid var(--border);
-  }
-  .dash-card {
-    background: var(--black); padding: 28px 30px;
-  }
-  .dash-card.wide { grid-column: span 2; }
-  .dash-card.full { grid-column: span 3; }
-  .card-label {
-    font-size: 0.62rem; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--gray);
-    margin-bottom: 18px; display: flex; align-items: center;
-    justify-content: space-between;
-  }
-  .card-label .badge {
-    padding: 3px 8px; border-radius: 2px;
-    font-size: 0.6rem; letter-spacing: 0.1em;
-  }
-  .badge-red { background: rgba(255,59,59,0.15); color: var(--red-flag); border: 1px solid rgba(255,59,59,0.3); }
-  .badge-yellow { background: rgba(255,217,61,0.15); color: var(--yellow-flag); border: 1px solid rgba(255,217,61,0.3); }
-  .badge-green { background: rgba(107,203,119,0.15); color: var(--green-flag); border: 1px solid rgba(107,203,119,0.3); }
+/* Range sliders */
+.scale-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.scale-row .scale-lbl { font-size: 0.95rem; font-weight: 400; color: var(--text-light); text-transform: none; letter-spacing: 0; min-width: 220px; }
+input[type=range] {
+  -webkit-appearance: none; padding: 0; height: 4px;
+  background: rgba(212,175,55,0.2); border: none; border-radius: 2px; flex: 1; min-width: 120px;
+}
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: var(--primary-gold); border-radius: 50%; cursor: pointer; }
+.scale-val { font-size: 1rem; font-weight: 700; color: var(--primary-gold); min-width: 28px; text-align: right; }
 
-  /* ─── RISK FLAGS ─── */
-  .flag-list { display: flex; flex-direction: column; gap: 10px; }
-  .flag-item {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 12px 14px; border-radius: 3px;
-  }
-  .flag-item.red { background: rgba(255,59,59,0.07); border-left: 2px solid var(--red-flag); }
-  .flag-item.yellow { background: rgba(255,217,61,0.07); border-left: 2px solid var(--yellow-flag); }
-  .flag-item.green { background: rgba(107,203,119,0.07); border-left: 2px solid var(--green-flag); }
-  .flag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-  .flag-dot.red { background: var(--red-flag); }
-  .flag-dot.yellow { background: var(--yellow-flag); }
-  .flag-dot.green { background: var(--green-flag); }
-  .flag-text { font-size: 0.74rem; line-height: 1.6; }
-  .flag-source { font-size: 0.62rem; color: var(--gray); margin-top: 4px; font-style: italic; }
+/* Pill buttons */
+.pill-group { display: flex; gap: 10px; flex-wrap: wrap; }
+.pill {
+  padding: 10px 20px; border: 1px solid rgba(212,175,55,0.2);
+  background: var(--dark-bg); color: var(--text-gray);
+  cursor: pointer; font-family: inherit; font-size: 0.95rem;
+  border-radius: 2px; transition: all 0.15s; user-select: none;
+}
+.pill.selected { border-color: var(--primary-gold); color: var(--primary-gold); background: rgba(212,175,55,0.08); }
 
-  /* ─── BIOMECHANICAL FINDINGS ─── */
-  .findings-table { width: 100%; border-collapse: collapse; }
-  .findings-table th {
-    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--gray); padding: 8px 12px; text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  .findings-table td { padding: 10px 12px; font-size: 0.75rem; border-bottom: 1px solid rgba(42,42,42,0.5); vertical-align: top; }
-  .findings-table tr:last-child td { border-bottom: none; }
-  .comp-tag {
-    display: inline-block; padding: 3px 8px; border-radius: 2px;
-    font-size: 0.62rem; letter-spacing: 0.08em;
-    background: rgba(255,107,53,0.12); color: var(--accent2);
-    border: 1px solid rgba(255,107,53,0.3);
-  }
-  .muscle-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-  .muscle-tag {
-    padding: 2px 7px; font-size: 0.6rem; border-radius: 2px;
-  }
-  .muscle-tag.over { background: rgba(255,59,59,0.1); color: #ff8080; }
-  .muscle-tag.under { background: rgba(107,203,119,0.1); color: #8fdb97; }
+/* PAR-Q */
+.parq-item {
+  display: flex; align-items: flex-start; gap: 1rem;
+  padding: 1.1rem 0; border-bottom: 1px solid var(--border-sub);
+}
+.parq-item:last-child { border-bottom: none; }
+.parq-text { flex: 1; font-size: 1rem; line-height: 1.75; }
+.parq-text strong { color: var(--amber); }
+.yn-wrap { display: flex; gap: 8px; flex-shrink: 0; margin-top: 3px; }
+.yn-btn {
+  padding: 9px 18px; border: 1px solid rgba(255,255,255,0.15);
+  background: var(--dark-bg); color: var(--text-gray);
+  cursor: pointer; font-family: inherit; font-size: 0.88rem; font-weight: 700;
+  letter-spacing: 1px; border-radius: 2px; transition: all 0.15s;
+}
+.yn-btn.yes.sel { border-color: var(--red); color: var(--red); background: rgba(224,82,82,0.08); }
+.yn-btn.no.sel  { border-color: var(--green); color: var(--green); background: rgba(82,183,136,0.08); }
+.parq-detail {
+  display: none; margin-top: 0.6rem; width: 100%;
+  background: rgba(212,175,55,0.04); border: 1px solid var(--border-gold);
+  color: var(--text-light); padding: 10px 14px;
+  font-family: inherit; font-size: 0.95rem; border-radius: 2px; outline: none;
+}
+.parq-detail:focus { border-color: var(--primary-gold); }
 
-  /* ─── CEX PROTOCOL ─── */
-  .cex-stages { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .cex-stage { padding: 16px; border: 1px solid var(--border); border-radius: 3px; }
-  .cex-stage-num {
-    font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 6px;
-  }
-  .cex-stage-name {
-    font-family: 'Syne', sans-serif; font-weight: 700;
-    font-size: 0.85rem; margin-bottom: 10px;
-  }
-  .cex-item { font-size: 0.72rem; color: var(--gray); padding: 3px 0; display: flex; gap: 8px; }
-  .cex-item::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+/* ═══════════════════════════════════════════
+   VIDEO UPLOAD SECTION
+═══════════════════════════════════════════ */
 
-  /* ─── BEHAVIOR STAGE ─── */
-  .stage-meter { margin-bottom: 20px; }
-  .stage-track {
-    display: flex; height: 6px; border-radius: 3px; overflow: hidden;
-    margin-bottom: 8px; gap: 2px;
-  }
-  .stage-seg { flex: 1; background: var(--border); border-radius: 1px; transition: background 0.5s; }
-  .stage-seg.lit { background: var(--accent); }
-  .stage-labels { display: flex; justify-content: space-between; }
-  .stage-label-item { font-size: 0.55rem; color: var(--gray); text-align: center; flex: 1; }
-  .stage-current {
-    font-family: 'Syne', sans-serif; font-weight: 700;
-    font-size: 1.2rem; margin-bottom: 6px;
-  }
-  .stage-desc { font-size: 0.72rem; color: var(--gray); line-height: 1.7; }
-  .goal-list { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
-  .goal-item { display: flex; align-items: center; gap: 10px; font-size: 0.73rem; }
-  .goal-bar-wrap { flex: 1; height: 3px; background: var(--border); border-radius: 2px; }
-  .goal-bar { height: 100%; border-radius: 2px; background: var(--accent); }
-  .goal-score { color: var(--accent); font-size: 0.7rem; min-width: 24px; text-align: right; }
+/* Instruction panel */
+.video-guide {
+  background: var(--dark-bg);
+  border: 1px solid var(--border-gold);
+  border-left: 4px solid var(--primary-gold);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+}
+.video-guide-title {
+  font-size: 1rem; font-weight: 700; color: var(--primary-gold);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;
+}
+.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; }
+.guide-col h4 {
+  font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text-light);
+  margin-bottom: 0.85rem; padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-sub);
+}
+.guide-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.guide-list li { display: flex; gap: 10px; font-size: 0.95rem; color: var(--text-gray); line-height: 1.55; }
+.guide-list li::before { content:"→"; color: var(--primary-gold); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+.guide-list li strong { color: var(--text-light); }
+.phone-tip {
+  display: flex; gap: 12px; align-items: flex-start;
+  margin-top: 1.5rem; padding: 1rem 1.25rem;
+  background: rgba(212,175,55,0.05); border: 1px solid var(--border-gold); border-radius: 2px;
+}
+.phone-tip-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1.3; }
+.phone-tip p { font-size: 0.95rem; color: var(--text-gray); line-height: 1.65; }
+.phone-tip strong { color: var(--text-light); }
 
-  /* ─── AI GENERATE BUTTON ─── */
-  .ai-generate-wrap {
-    padding: 24px 40px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 20px;
-  }
-  .ai-generate-btn {
-    display: flex; align-items: center; gap: 10px;
-    padding: 13px 28px; border: 1px solid var(--accent);
-    background: rgba(200,245,66,0.06); color: var(--accent);
-    cursor: pointer; font-family: 'DM Mono', monospace;
-    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
-    border-radius: 2px; transition: all 0.2s;
-  }
-  .ai-generate-btn:hover { background: rgba(200,245,66,0.12); }
-  .ai-generate-btn .spinner {
-    display: none; width: 14px; height: 14px;
-    border: 2px solid rgba(200,245,66,0.3);
-    border-top-color: var(--accent); border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .ai-note { font-size: 0.68rem; color: var(--gray); max-width: 500px; line-height: 1.6; }
+/* Upload cards */
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.upload-card {
+  background: var(--dark-bg);
+  border: 1px dashed rgba(212,175,55,0.25);
+  border-radius: 3px; position: relative; overflow: hidden;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+}
+.upload-card:hover { border-color: var(--primary-gold); background: rgba(212,175,55,0.03); }
+.upload-card.has-file { border-style: solid; border-color: var(--primary-gold); }
+.upload-card input[type=file] {
+  position: absolute; inset: 0; opacity: 0;
+  width: 100%; height: 100%; cursor: pointer;
+  padding: 0; border: none; background: none;
+  font-size: 16px; /* prevents iOS auto-zoom */
+}
+.upload-inner { padding: 1.75rem 1.25rem; text-align: center; pointer-events: none; }
+.upload-emoji { font-size: 2.2rem; display: block; margin-bottom: 0.75rem; }
+.upload-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text-light); }
+.upload-what { font-size: 0.88rem; color: var(--text-gray); line-height: 1.6; margin-bottom: 0.6rem; }
+.upload-how {
+  font-size: 0.82rem; color: var(--text-gray); line-height: 1.55;
+  padding-top: 0.6rem; border-top: 1px solid var(--border-sub);
+  text-align: left;
+}
+.upload-how strong { color: var(--primary-gold); }
+.upload-cta {
+  display: inline-block; margin-top: 1rem;
+  padding: 9px 22px; background: var(--accent-grad);
+  color: #000; font-size: 0.82rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; border-radius: 2px;
+}
+.upload-status { font-size: 0.85rem; color: var(--primary-gold); margin-top: 0.6rem; font-weight: 600; }
 
-  /* ─── AI RESPONSE AREA ─── */
-  .ai-response {
-    display: none; padding: 28px 30px;
-    background: var(--card); border-left: 2px solid var(--accent);
-    margin: 0;
-  }
-  .ai-response.visible { display: block; }
-  .ai-response-label {
-    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .ai-response-label::before {
-    content: '◆'; font-size: 0.5rem;
-  }
-  .ai-response-text { font-size: 0.78rem; line-height: 1.85; color: var(--white); white-space: pre-wrap; }
+/* Cardio results (no file input) */
+.results-card {
+  background: var(--dark-bg);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 3px; padding: 1.75rem 1.25rem;
+}
+.results-card .upload-emoji, .results-card .upload-name { pointer-events: none; }
+.results-inner { margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+.results-inner label { font-size: 0.78rem; }
 
-  /* ─── LOADING STATE ─── */
-  .loading-dots::after {
-    content: '';
-    animation: dots 1.5s infinite;
-  }
-  @keyframes dots {
-    0%   { content: ''; }
-    33%  { content: '.'; }
-    66%  { content: '..'; }
-    100% { content: '...'; }
-  }
+/* Postural checks */
+.postural-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 0.75rem; }
+.check-pill {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; background: var(--dark-bg);
+  border: 1px solid rgba(212,175,55,0.15); border-radius: 2px;
+  cursor: pointer; transition: all 0.15s; user-select: none;
+  font-size: 0.95rem; color: var(--text-gray);
+}
+.check-pill.on { border-color: var(--primary-gold); color: var(--text-light); background: rgba(212,175,55,0.06); }
+.check-box {
+  width: 20px; height: 20px; flex-shrink: 0;
+  border: 1px solid rgba(212,175,55,0.3); border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; color: #000; transition: all 0.15s;
+}
+.check-pill.on .check-box { background: var(--primary-gold); border-color: var(--primary-gold); }
 
-  /* ─── EMPTY DASHBOARD ─── */
-  .empty-state {
-    grid-column: span 3;
-    padding: 80px 40px; text-align: center; color: var(--gray);
-  }
-  .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 10px; color: var(--white); }
-  .empty-state p { font-size: 0.76rem; line-height: 1.8; max-width: 400px; margin: 0 auto; }
+/* ── FORM NAV ─────────────────────────────── */
+.form-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.25rem 5%; border-top: 1px solid var(--border-gold);
+  background: rgba(26,26,26,0.97); backdrop-filter: blur(8px);
+  position: sticky; bottom: 0; z-index: 50;
+}
+.step-counter { font-size: 0.88rem; color: var(--text-gray); }
 
-  /* ─── RESPONSIVE ─── */
-  @media (max-width: 768px) {
-    nav { padding: 14px 20px; }
-    .hero, .section-wrap, .form-nav { padding-left: 20px; padding-right: 20px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-grid.three { grid-template-columns: 1fr 1fr; }
-    .field.span2, .field.span3 { grid-column: span 1; }
-    .dash-grid { grid-template-columns: 1fr; }
-    .dash-card.wide, .dash-card.full { grid-column: span 1; }
-    .cex-stages { grid-template-columns: 1fr; }
-    .upload-grid { grid-template-columns: 1fr; }
-    .stepper { padding: 20px; }
-  }
+.cta-button {
+  display: inline-block; background: var(--accent-grad);
+  color: #000; padding: 13px 32px; font-size: 0.95rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; border: none;
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border-radius: 2px;
+  font-family: inherit;
+}
+.cta-button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,175,55,0.3); }
+.cta-ghost {
+  background: none; color: var(--text-gray); padding: 13px 32px;
+  font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+  border: 1px solid rgba(255,255,255,0.15); cursor: pointer;
+  transition: border-color 0.2s, color 0.2s; border-radius: 2px; font-family: inherit;
+}
+.cta-ghost:hover { border-color: rgba(255,255,255,0.4); color: var(--text-light); }
+.cta-submit {
+  background: var(--primary-gold); color: #000; padding: 13px 32px;
+  font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border-radius: 2px;
+  font-family: inherit;
+}
+.cta-submit:hover { background: #f4d03f; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,175,55,0.3); }
+
+/* Submit screen */
+.submit-screen {
+  display: none; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 70vh; padding: 4rem 5%; text-align: center;
+}
+.submit-screen.active { display: flex; }
+.submit-icon { font-size: 4rem; margin-bottom: 1.5rem; }
+.submit-screen h2 { font-size: 2.4rem; font-weight: 800; margin-bottom: 1rem; }
+.submit-screen h2 span { color: var(--primary-gold); }
+.submit-screen p { color: var(--text-gray); max-width: 480px; line-height: 1.8; font-size: 1rem; }
+.progress-wrap { width: 320px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; margin: 2rem auto 1rem; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent-grad); animation: fillbar 3s ease-out forwards; }
+@keyframes fillbar { from{width:0} to{width:100%} }
+.loading-dots::after { content:''; animation: dots 1.5s infinite; }
+@keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
+
+/* ═══════════════════════════════════════════
+   TRAINER DASHBOARD
+═══════════════════════════════════════════ */
+.dash-header {
+  padding: 3rem 5% 2rem;
+  border-bottom: 1px solid var(--border-gold);
+  background: linear-gradient(135deg, rgba(212,175,55,0.04) 0%, transparent 60%);
+  display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;
+}
+.dash-eyebrow { color: var(--primary-gold); font-size: 0.85rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.5rem; }
+.dash-header h2 { font-size: 2.2rem; font-weight: 800; }
+.logout-btn {
+  padding: 9px 22px; background: none; border: 1px solid rgba(255,255,255,0.15);
+  color: var(--text-gray); font-family: inherit; font-size: 0.82rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-radius: 2px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.logout-btn:hover { border-color: var(--primary-gold); color: var(--primary-gold); }
+
+.client-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 1.25rem 5%; border-bottom: 1px solid var(--border-gold);
+  background: var(--dark-bg); overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.client-chip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+}
+.client-chip.active { border-color: var(--primary-gold); background: rgba(212,175,55,0.08); }
+.client-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.1);
+}
+.client-chip.active .client-avatar { background: var(--primary-gold); color: #000; }
+.client-name { font-size: 0.88rem; white-space: nowrap; }
+.client-dot { width: 8px; height: 8px; border-radius: 50%; }
+.chip-hint { font-size: 0.82rem; color: var(--text-gray); white-space: nowrap; padding: 0 8px; }
+
+/* AI generate bar */
+.ai-bar {
+  padding: 1.5rem 5%; border-bottom: 1px solid var(--border-gold);
+  display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+}
+.ai-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 28px; border: 1px solid var(--primary-gold);
+  background: rgba(212,175,55,0.06); color: var(--primary-gold);
+  cursor: pointer; font-family: inherit; font-size: 0.88rem;
+  font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  border-radius: 2px; transition: all 0.2s;
+}
+.ai-btn:hover { background: rgba(212,175,55,0.12); }
+.spinner {
+  display: none; width: 14px; height: 14px;
+  border: 2px solid rgba(212,175,55,0.3); border-top-color: var(--primary-gold);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.ai-note { font-size: 0.88rem; color: var(--text-gray); max-width: 500px; line-height: 1.6; }
+
+.ai-response {
+  display: none; padding: 2rem 5%;
+  background: rgba(212,175,55,0.03); border-left: 3px solid var(--primary-gold);
+}
+.ai-response.visible { display: block; }
+.ai-response-label { font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase; color: var(--primary-gold); font-weight: 700; margin-bottom: 1rem; }
+.ai-response-text { font-size: 0.95rem; line-height: 1.85; color: var(--text-light); white-space: pre-wrap; }
+
+/* Dashboard grid */
+.dash-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px; background: var(--border-gold); border-top: 1px solid var(--border-gold);
+}
+.dash-card { background: var(--darker-bg); padding: 2rem; }
+.dash-card.wide { grid-column: span 2; }
+.dash-card.full { grid-column: span 3; }
+.card-label {
+  font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-gray); font-weight: 600; margin-bottom: 1.25rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.badge { padding: 3px 10px; border-radius: 2px; font-size: 0.66rem; letter-spacing: 1px; font-weight: 700; }
+.badge-red    { background: rgba(224,82,82,0.12); color: var(--red); border: 1px solid rgba(224,82,82,0.3); }
+.badge-amber  { background: rgba(244,162,97,0.12); color: var(--amber); border: 1px solid rgba(244,162,97,0.3); }
+.badge-green  { background: rgba(82,183,136,0.12); color: var(--green); border: 1px solid rgba(82,183,136,0.3); }
+
+.flag-list { display: flex; flex-direction: column; gap: 10px; }
+.flag-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 2px; }
+.flag-item.red    { background: rgba(224,82,82,0.06); border-left: 2px solid var(--red); }
+.flag-item.amber  { background: rgba(244,162,97,0.06); border-left: 2px solid var(--amber); }
+.flag-item.green  { background: rgba(82,183,136,0.06); border-left: 2px solid var(--green); }
+.flag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.flag-dot.red   { background: var(--red); }
+.flag-dot.amber { background: var(--amber); }
+.flag-dot.green { background: var(--green); }
+.flag-text { font-size: 0.9rem; line-height: 1.6; }
+.flag-src { font-size: 0.76rem; color: var(--text-gray); margin-top: 3px; font-style: italic; }
+
+.findings-table { width: 100%; border-collapse: collapse; }
+.findings-table th { font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-gray); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border-gold); font-weight: 600; }
+.findings-table td { padding: 10px 12px; font-size: 0.9rem; border-bottom: 1px solid var(--border-sub); vertical-align: top; }
+.findings-table tr:last-child td { border-bottom: none; }
+.comp-tag { display: inline-block; padding: 3px 9px; border-radius: 2px; font-size: 0.74rem; background: rgba(244,162,97,0.12); color: var(--amber); border: 1px solid rgba(244,162,97,0.3); }
+.mtags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.mtag { padding: 2px 8px; font-size: 0.72rem; border-radius: 2px; }
+.mtag.over  { background: rgba(224,82,82,0.1); color: #e08080; }
+.mtag.under { background: rgba(82,183,136,0.1); color: #80c9a0; }
+
+.cex-stages { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cex-stage { padding: 16px; border: 1px solid var(--border-gold); border-radius: 2px; }
+.cex-stage-num { font-size: 0.66rem; letter-spacing: 2px; text-transform: uppercase; color: var(--primary-gold); margin-bottom: 4px; font-weight: 700; }
+.cex-stage-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+.cex-item { font-size: 0.88rem; color: var(--text-gray); padding: 3px 0; display: flex; gap: 8px; }
+.cex-item::before { content:"→"; color: var(--primary-gold); font-weight: 700; flex-shrink: 0; }
+
+.stage-track { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 8px; gap: 2px; }
+.stage-seg { flex: 1; background: rgba(255,255,255,0.08); border-radius: 1px; }
+.stage-seg.lit { background: var(--primary-gold); }
+.stage-lbls { display: flex; justify-content: space-between; margin-bottom: 1.25rem; }
+.stage-lbl { font-size: 0.6rem; color: var(--text-gray); text-align: center; flex: 1; }
+.stage-current { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
+.stage-desc { font-size: 0.9rem; color: var(--text-gray); line-height: 1.7; }
+.goal-list { display: flex; flex-direction: column; gap: 10px; margin-top: 1.25rem; }
+.goal-item { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+.goal-bar-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; }
+.goal-bar { height: 100%; border-radius: 2px; background: var(--accent-grad); }
+.goal-score { color: var(--primary-gold); font-size: 0.85rem; font-weight: 700; min-width: 32px; text-align: right; }
+
+.empty-state { grid-column: span 3; padding: 5rem 2rem; text-align: center; color: var(--text-gray); }
+.empty-state h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-light); }
+.empty-state p { font-size: 0.95rem; line-height: 1.8; max-width: 400px; margin: 0 auto; }
+
+/* Footer */
+footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold); padding: 3rem 5%; text-align: center; }
+.footer-logo { font-size: 1.75rem; font-weight: 700; color: var(--primary-gold); letter-spacing: 2px; margin-bottom: 0.75rem; }
+.footer-tagline { color: var(--text-gray); font-size: 0.95rem; margin-bottom: 1.5rem; }
+.footer-bottom { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-sub); color: var(--text-gray); font-size: 0.85rem; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid.three { grid-template-columns: 1fr 1fr; }
+  .field.span2, .field.span3 { grid-column: span 1; }
+  .guide-grid { grid-template-columns: 1fr; }
+  .upload-grid { grid-template-columns: 1fr; }
+  .postural-grid { grid-template-columns: 1fr; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-card.wide, .dash-card.full { grid-column: span 1; }
+  .cex-stages { grid-template-columns: 1fr; }
+  .ai-bar { flex-direction: column; align-items: flex-start; }
+  .scale-row .scale-lbl { min-width: 100%; }
+  .dash-header { flex-direction: column; align-items: flex-start; }
+}
 </style>
 </head>
 <body>
 
-<!-- ─── NAVIGATION ─── -->
-<nav>
-  <div class="nav-logo">EC<span>.</span>FITNESS</div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchView('client')">Client Intake</button>
-    <button class="nav-tab" onclick="switchView('trainer')">Trainer Dashboard</button>
+<!-- ═══ HEADER ════════════════════════════ -->
+<header>
+  <nav>
+    <a href="index.html" class="logo"><span class="logo-slash">//</span>EC FITNESS</a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#approach">Approach</a>
+      <a href="index.html#services">Services</a>
+      <a href="index.html#credentials">About</a>
+      <a href="ai-trainer.html">AI Training</a>
+      <a href="booking.html">Book Session</a>
+    </div>
+    <button class="mobile-menu-btn" id="menuBtn">☰</button>
+  </nav>
+</header>
+
+
+<!-- ═══════════════════════════════════════
+     VIEW 1 — PORTAL ENTRY (Login / Intake choice)
+═══════════════════════════════════════ -->
+<div class="view active" id="view-entry">
+  <div class="portal-entry">
+
+    <!-- Intake choice screen -->
+    <div id="choiceScreen" style="width:100%; max-width:480px;">
+      <div class="entry-card">
+        <div class="entry-logo"><span style="color:#fff">//</span>EC FITNESS</div>
+        <div class="entry-sub">Pre-Session Intake &amp; Trainer Portal</div>
+
+        <button class="cta-button" style="width:100%; font-size:1rem; padding:16px;" onclick="showView('intake')">
+          Begin Client Intake →
+        </button>
+
+        <div class="entry-divider">or</div>
+
+        <button class="cta-ghost" style="width:100%;" onclick="showScreen('loginScreen')">
+          Trainer Login
+        </button>
+      </div>
+    </div>
+
+    <!-- Trainer login screen -->
+    <div id="loginScreen" style="display:none; width:100%; max-width:480px;">
+      <div class="entry-card">
+        <div class="entry-logo"><span style="color:#fff">//</span>EC FITNESS</div>
+        <div class="entry-sub">Trainer Dashboard Access</div>
+
+        <div class="lfield">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="Enter your email" autocomplete="email" />
+        </div>
+        <div class="lfield">
+          <label>Password</label>
+          <input type="password" id="loginPw" placeholder="••••••••••" autocomplete="current-password"
+            onkeydown="if(event.key==='Enter') attemptLogin()" />
+        </div>
+        <button class="cta-button" style="width:100%;" onclick="attemptLogin()">Sign In →</button>
+        <div class="login-err" id="loginErr">Incorrect email or password.</div>
+        <p style="margin-top:1.25rem; text-align:center; font-size:0.85rem;">
+          <a href="#" onclick="showScreen('choiceScreen')" style="color:var(--primary-gold); text-decoration:none;">← Back</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- 2FA screen -->
+    <div id="tfaScreen" style="display:none; width:100%; max-width:480px;">
+      <div class="entry-card">
+        <div class="entry-logo"><span style="color:#fff">//</span>EC FITNESS</div>
+        <div class="entry-sub">Two-Step Verification</div>
+        <p class="tfa-hint">A 6-digit code was sent to your email. Enter it below to access the trainer dashboard.</p>
+        <div class="tfa-row" id="tfaRow">
+          <input class="tfa-digit" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]*" />
+          <input class="tfa-digit" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]*" />
+          <input class="tfa-digit" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]*" />
+          <input class="tfa-digit" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]*" />
+          <input class="tfa-digit" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]*" />
+          <input class="tfa-digit" maxlength="1" type="tel" inputmode="numeric" pattern="[0-9]*" />
+        </div>
+        <button class="cta-button" style="width:100%;" onclick="verifyTFA()">Verify &amp; Enter →</button>
+        <div class="login-err" id="tfaErr">Incorrect code. Please try again.</div>
+        <p class="tfa-resend">Didn't receive it? <a onclick="resendCode()">Resend code</a></p>
+      </div>
+    </div>
+
   </div>
-</nav>
+</div><!-- end view-entry -->
 
-<!-- ════════════════════════════════════════
-     CLIENT INTAKE VIEW
-════════════════════════════════════════ -->
-<div class="view active" id="view-client">
 
-  <!-- Hero -->
-  <div class="hero">
-    <div class="hero-label">Pre-Session Intake Portal</div>
-    <h1>Your assessment,<br><em>before</em> we meet.</h1>
-    <p>Complete this form at your own pace. Your trainer will review findings prior to your first session — so your time together is focused entirely on strategy and goals.</p>
+<!-- ═══════════════════════════════════════
+     VIEW 2 — CLIENT INTAKE FORM
+═══════════════════════════════════════ -->
+<div class="view" id="view-intake">
+
+  <div class="intake-hero">
+    <div class="intake-eyebrow">EC Fitness · Pre-Session Assessment</div>
+    <h1>Your assessment, <span>before we meet.</span></h1>
+    <p>Complete this at your own pace. Edgar reviews your data and health history before your first session — so every minute together is pure training, not paperwork.</p>
   </div>
 
   <!-- Stepper -->
@@ -540,173 +645,216 @@
     <div class="step-line"></div>
     <div class="step" id="step-1"><div class="step-num">2</div><div class="step-label">Health History</div></div>
     <div class="step-line"></div>
-    <div class="step" id="step-2"><div class="step-num">3</div><div class="step-label">Body Composition</div></div>
+    <div class="step" id="step-2"><div class="step-num">3</div><div class="step-label">Body Comp</div></div>
     <div class="step-line"></div>
     <div class="step" id="step-3"><div class="step-num">4</div><div class="step-label">Goals</div></div>
     <div class="step-line"></div>
     <div class="step" id="step-4"><div class="step-num">5</div><div class="step-label">Assessments</div></div>
   </div>
 
-  <!-- ─── SECTION 0: PAR-Q+ ─── -->
+  <!-- ── STEP 0: PAR-Q+ ──────────────────── -->
   <div class="form-section active" id="section-0">
     <div class="section-wrap">
+      <div class="section-eyebrow">Step 1 of 5</div>
       <div class="section-title">PAR-Q+ Health Screening</div>
-      <div class="section-subtitle">Physical Activity Readiness Questionnaire · 2023 Edition · Answer all 7 questions honestly</div>
+      <div class="section-subtitle">2023 Physical Activity Readiness Questionnaire · Read each question carefully and answer honestly.</div>
 
       <div class="parq-item">
         <div class="parq-text">1. Has your doctor ever said that you have a <strong>heart condition</strong> OR <strong>high blood pressure</strong>?</div>
-        <div class="toggle-yn">
-          <button class="yn-btn yes" onclick="toggleYN(this,'parq1','yes')">YES</button>
-          <button class="yn-btn no" onclick="toggleYN(this,'parq1','no')">NO</button>
-        </div>
-      </div>
-      <div class="parq-item">
-        <div class="parq-text">2. Do you feel <strong>pain in your chest</strong> at rest, during daily activities, OR when you do physical activity?</div>
-        <div class="toggle-yn">
-          <button class="yn-btn yes" onclick="toggleYN(this,'parq2','yes')">YES</button>
-          <button class="yn-btn no" onclick="toggleYN(this,'parq2','no')">NO</button>
-        </div>
-      </div>
-      <div class="parq-item">
-        <div class="parq-text">3. Do you <strong>lose balance because of dizziness</strong> OR have you lost consciousness in the last 12 months?</div>
-        <div class="toggle-yn">
-          <button class="yn-btn yes" onclick="toggleYN(this,'parq3','yes')">YES</button>
-          <button class="yn-btn no" onclick="toggleYN(this,'parq3','no')">NO</button>
-        </div>
-      </div>
-      <div class="parq-item">
-        <div class="parq-text">4. Have you ever been diagnosed with <strong>another chronic medical condition</strong> (other than heart disease or high blood pressure)?</div>
-        <div class="toggle-yn">
-          <button class="yn-btn yes" onclick="toggleYN(this,'parq4','yes')">YES</button>
-          <button class="yn-btn no" onclick="toggleYN(this,'parq4','no')">NO</button>
-        </div>
-      </div>
-      <input type="text" id="parq4-detail" placeholder="If YES — list condition(s) here" style="margin-top:-10px; display:none;" />
-      <div class="parq-item">
-        <div class="parq-text">5. Are you currently taking <strong>prescribed medications</strong> for a chronic medical condition?</div>
-        <div class="toggle-yn">
-          <button class="yn-btn yes" onclick="toggleYN(this,'parq5','yes')">YES</button>
-          <button class="yn-btn no" onclick="toggleYN(this,'parq5','no')">NO</button>
-        </div>
-      </div>
-      <input type="text" id="parq5-detail" placeholder="If YES — list condition(s) and medications" style="margin-top:-10px; display:none;" />
-      <div class="parq-item">
-        <div class="parq-text">6. Do you currently have a <strong>bone, joint, or soft tissue problem</strong> that could be made worse by becoming more physically active?</div>
-        <div class="toggle-yn">
-          <button class="yn-btn yes" onclick="toggleYN(this,'parq6','yes')">YES</button>
-          <button class="yn-btn no" onclick="toggleYN(this,'parq6','no')">NO</button>
-        </div>
-      </div>
-      <div class="parq-item">
-        <div class="parq-text">7. Has your doctor ever said that you should only do <strong>medically supervised physical activity</strong>?</div>
-        <div class="toggle-yn">
-          <button class="yn-btn yes" onclick="toggleYN(this,'parq7','yes')">YES</button>
-          <button class="yn-btn no" onclick="toggleYN(this,'parq7','no')">NO</button>
+        <div class="yn-wrap">
+          <button class="yn-btn yes" onclick="toggleYN(this,'q1','yes')">YES</button>
+          <button class="yn-btn no sel" onclick="toggleYN(this,'q1','no')">NO</button>
         </div>
       </div>
 
-      <div style="margin-top:30px;">
-        <div class="subsection-label">Participant Declaration</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Full Name</label>
-            <input type="text" id="parq-name" placeholder="Your full name" />
-          </div>
-          <div class="field">
-            <label>Date</label>
-            <input type="date" id="parq-date" />
+      <div class="parq-item">
+        <div class="parq-text">2. Do you feel <strong>pain in your chest</strong> at rest, during daily activities, or when you do physical activity?</div>
+        <div class="yn-wrap">
+          <button class="yn-btn yes" onclick="toggleYN(this,'q2','yes')">YES</button>
+          <button class="yn-btn no sel" onclick="toggleYN(this,'q2','no')">NO</button>
+        </div>
+      </div>
+
+      <div class="parq-item">
+        <div class="parq-text">3. Do you <strong>lose balance because of dizziness</strong> OR have you lost consciousness in the last 12 months?</div>
+        <div class="yn-wrap">
+          <button class="yn-btn yes" onclick="toggleYN(this,'q3','yes')">YES</button>
+          <button class="yn-btn no sel" onclick="toggleYN(this,'q3','no')">NO</button>
+        </div>
+      </div>
+
+      <div class="parq-item" style="flex-direction:column; gap:0.6rem;">
+        <div style="display:flex; gap:1rem; align-items:flex-start;">
+          <div class="parq-text">4. Have you ever been diagnosed with <strong>another chronic medical condition</strong> (other than heart disease or high blood pressure)?</div>
+          <div class="yn-wrap">
+            <button class="yn-btn yes" onclick="toggleYN(this,'q4','yes')">YES</button>
+            <button class="yn-btn no sel" onclick="toggleYN(this,'q4','no')">NO</button>
           </div>
         </div>
+        <input class="parq-detail" id="q4-detail" placeholder="Please list condition(s) here…" />
+      </div>
+
+      <div class="parq-item" style="flex-direction:column; gap:0.6rem;">
+        <div style="display:flex; gap:1rem; align-items:flex-start;">
+          <div class="parq-text">5. Are you currently taking <strong>prescribed medications</strong> for a chronic medical condition?</div>
+          <div class="yn-wrap">
+            <button class="yn-btn yes" onclick="toggleYN(this,'q5','yes')">YES</button>
+            <button class="yn-btn no sel" onclick="toggleYN(this,'q5','no')">NO</button>
+          </div>
+        </div>
+        <input class="parq-detail" id="q5-detail" placeholder="Please list condition(s) and medications…" />
+      </div>
+
+      <div class="parq-item" style="flex-direction:column; gap:0.6rem;">
+        <div style="display:flex; gap:1rem; align-items:flex-start;">
+          <div class="parq-text">6. Do you currently have a <strong>bone, joint, or soft tissue problem</strong> that could be made worse by becoming more physically active?</div>
+          <div class="yn-wrap">
+            <button class="yn-btn yes" onclick="toggleYN(this,'q6','yes')">YES</button>
+            <button class="yn-btn no sel" onclick="toggleYN(this,'q6','no')">NO</button>
+          </div>
+        </div>
+        <input class="parq-detail" id="q6-detail" placeholder="Please list condition(s) here…" />
+      </div>
+
+      <div class="parq-item">
+        <div class="parq-text">7. Has your doctor ever said that you should only do <strong>medically supervised physical activity</strong>?</div>
+        <div class="yn-wrap">
+          <button class="yn-btn yes" onclick="toggleYN(this,'q7','yes')">YES</button>
+          <button class="yn-btn no sel" onclick="toggleYN(this,'q7','no')">NO</button>
+        </div>
+      </div>
+
+      <hr class="divider">
+      <div class="subsection-label">Participant Declaration</div>
+      <div class="form-grid">
+        <div class="field"><label>Full Name</label><input type="text" id="parq-name" placeholder="Your full legal name" autocomplete="name" /></div>
+        <div class="field"><label>Date</label><input type="date" id="parq-date" /></div>
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 1: HEALTH HISTORY ─── -->
+  <!-- ── STEP 1: HEALTH HISTORY ──────────── -->
   <div class="form-section" id="section-1">
     <div class="section-wrap">
-      <div class="section-title">Lifestyle & Health History</div>
-      <div class="section-subtitle">NASM CPT7 · Lifestyle and Health History Questionnaire</div>
+      <div class="section-eyebrow">Step 2 of 5</div>
+      <div class="section-title">Lifestyle &amp; Health History</div>
+      <div class="section-subtitle">NASM CPT7 standard · Your answers directly shape your corrective protocol and program design.</div>
 
       <div class="subsection-label">Personal Information</div>
       <div class="form-grid">
-        <div class="field"><label>Full Name</label><input type="text" id="hh-name" placeholder="First Last" /></div>
-        <div class="field"><label>Age</label><input type="number" id="hh-age" placeholder="Years" /></div>
+        <div class="field"><label>Full Name</label><input type="text" id="hh-name" placeholder="First Last" autocomplete="name" /></div>
+        <div class="field"><label>Age</label><input type="number" id="hh-age" placeholder="Years" min="16" max="99" oninput="calcHRmax()" /></div>
         <div class="field"><label>Gender</label>
-          <select id="hh-gender">
-            <option value="">Select</option>
-            <option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option>
-          </select>
+          <select id="hh-gender"><option value="">Select…</option><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select>
         </div>
-        <div class="field"><label>Occupation</label><input type="text" id="hh-occupation" placeholder="Your job title/role" /></div>
-        <div class="field"><label>Physician Name & Phone</label><input type="text" id="hh-physician" placeholder="Dr. Smith · (214) 555-0100" /></div>
-        <div class="field"><label>Emergency Contact</label><input type="text" id="hh-emergency" placeholder="Name · Phone" /></div>
+        <div class="field"><label>Occupation</label><input type="text" id="hh-occ" placeholder="Job title / role" /></div>
+        <div class="field"><label>Physician Name &amp; Phone</label><input type="text" id="hh-doc" placeholder="Dr. Smith · (214) 555-0100" /></div>
+        <div class="field"><label>Emergency Contact</label><input type="text" id="hh-emerg" placeholder="Name · Phone number" /></div>
       </div>
 
       <hr class="divider">
-      <div class="subsection-label">Exercise History</div>
-      <div class="form-grid full">
-        <div class="field"><label>Current exercise activities</label><input type="text" id="hh-exercise" placeholder="e.g., running 3x/week, weightlifting, yoga..." /></div>
-        <div class="field"><label>Days/week with 60+ min moderate exercise</label><input type="number" id="hh-days" placeholder="0–7" min="0" max="7" /></div>
+      <div class="subsection-label">Exercise &amp; Activity</div>
+      <div class="form-grid one">
+        <div class="field"><label>Current exercise activities</label><input type="text" id="hh-exercise" placeholder="e.g., running 3×/week, weightlifting, yoga, group fitness…" /></div>
+        <div class="field"><label>Days per week with 60+ minutes of moderate exercise</label><input type="number" id="hh-days" placeholder="0–7" min="0" max="7" /></div>
       </div>
 
       <hr class="divider">
       <div class="subsection-label">Lifestyle</div>
       <div class="form-grid">
-        <div class="field"><label>Do you get enough sleep?</label>
-          <div class="radio-group">
-            <div class="radio-btn" onclick="selectRadio(this,'sleep')">Yes</div>
-            <div class="radio-btn" onclick="selectRadio(this,'sleep')">No</div>
-            <div class="radio-btn" onclick="selectRadio(this,'sleep')">Sometimes</div>
-          </div>
-        </div>
-        <div class="field"><label>Do you smoke / use vaporizer?</label>
-          <div class="radio-group">
-            <div class="radio-btn" onclick="selectRadio(this,'smoke')">Yes</div>
-            <div class="radio-btn" onclick="selectRadio(this,'smoke')">No</div>
-            <div class="radio-btn" onclick="selectRadio(this,'smoke')">Occasionally</div>
+        <div class="field">
+          <label>Do you get enough sleep most nights?</label>
+          <div class="pill-group" style="margin-top:4px;">
+            <div class="pill" onclick="pickPill(this,'sleep')">Yes</div>
+            <div class="pill" onclick="pickPill(this,'sleep')">No</div>
+            <div class="pill" onclick="pickPill(this,'sleep')">Sometimes</div>
           </div>
         </div>
         <div class="field">
-          <div class="scale-row"><label>Stress Level (0–10)</label><input type="range" id="stress-scale" min="0" max="10" value="5" oninput="document.getElementById('stress-val').textContent=this.value"><span class="scale-val" id="stress-val">5</span></div>
+          <label>Do you smoke or use a vaporizer?</label>
+          <div class="pill-group" style="margin-top:4px;">
+            <div class="pill" onclick="pickPill(this,'smoke')">Yes</div>
+            <div class="pill" onclick="pickPill(this,'smoke')">No</div>
+            <div class="pill" onclick="pickPill(this,'smoke')">Occasionally</div>
+          </div>
         </div>
-        <div class="field"><label>Alcoholic drinks/week</label><input type="number" id="hh-alcohol" placeholder="0" min="0" /></div>
+        <div class="field">
+          <label>Average stress level</label>
+          <div class="scale-row" style="margin-top:8px;">
+            <span class="scale-lbl">0 = none · 10 = extreme</span>
+            <input type="range" min="0" max="10" value="5" oninput="document.getElementById('sval').textContent=this.value">
+            <span class="scale-val" id="sval">5</span>
+          </div>
+        </div>
+        <div class="field"><label>Alcoholic drinks per week</label><input type="number" id="hh-alc" placeholder="0" min="0" /></div>
+        <div class="field span2"><label>How do you manage stress?</label><input type="text" id="hh-stress" placeholder="e.g., meditation, walks, reading, nothing currently…" /></div>
+      </div>
+
+      <hr class="divider">
+      <div class="subsection-label">Occupation &amp; Daily Habits</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Does your job require extended sitting?</label>
+          <div class="pill-group" style="margin-top:4px;">
+            <div class="pill" onclick="pickPill(this,'sit')">Yes</div>
+            <div class="pill" onclick="pickPill(this,'sit')">No</div>
+            <div class="pill" onclick="pickPill(this,'sit')">Mixed</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Does your job involve repetitive movements?</label>
+          <div class="pill-group" style="margin-top:4px;">
+            <div class="pill" onclick="pickPill(this,'rep')">Yes</div>
+            <div class="pill" onclick="pickPill(this,'rep')">No</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Do you regularly wear heeled footwear?</label>
+          <div class="pill-group" style="margin-top:4px;">
+            <div class="pill" onclick="pickPill(this,'heel')">Yes</div>
+            <div class="pill" onclick="pickPill(this,'heel')">No</div>
+            <div class="pill" onclick="pickPill(this,'heel')">Sometimes</div>
+          </div>
+        </div>
+        <div class="field"><label>Recreational activities (golf, skiing, etc.)</label><input type="text" id="hh-rec" placeholder="List activities, or 'None'" /></div>
       </div>
 
       <hr class="divider">
       <div class="subsection-label">Medical History</div>
-      <div class="form-grid full">
-        <div class="field"><label>Past musculoskeletal injuries</label><textarea id="hh-injuries" placeholder="List any past injuries (e.g., ACL tear 2019, right shoulder impingement...)"></textarea></div>
-        <div class="field"><label>Past surgeries</label><textarea id="hh-surgeries" placeholder="List any surgeries and dates..."></textarea></div>
-        <div class="field"><label>Chronic health conditions</label><textarea id="hh-conditions" placeholder="e.g., hypertension, Type 2 diabetes, asthma..."></textarea></div>
-        <div class="field"><label>Current medications</label><textarea id="hh-meds" placeholder="List medications and dosages..."></textarea></div>
+      <div class="form-grid one">
+        <div class="field"><label>Past musculoskeletal injuries</label><textarea id="hh-inj" placeholder="e.g., ACL tear (2019, right knee), left shoulder impingement (2022)… or 'None'"></textarea></div>
+        <div class="field"><label>Past surgeries</label><textarea id="hh-surg" placeholder="List surgeries and approximate dates… or 'None'"></textarea></div>
+        <div class="field"><label>Chronic health conditions</label><textarea id="hh-cond" placeholder="e.g., hypertension, Type 2 diabetes, asthma… or 'None'"></textarea></div>
+        <div class="field"><label>Current medications</label><textarea id="hh-meds" placeholder="List medications and dosages… or 'None'"></textarea></div>
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 2: BODY COMPOSITION ─── -->
+  <!-- ── STEP 2: BODY COMPOSITION ────────── -->
   <div class="form-section" id="section-2">
     <div class="section-wrap">
+      <div class="section-eyebrow">Step 3 of 5</div>
       <div class="section-title">Body Composition</div>
-      <div class="section-subtitle">NASM CPT7 · Self-reported measurements · Use a flexible tape measure for circumferences</div>
+      <div class="section-subtitle">Self-reported measurements · Use a flexible tape measure for circumferences. BMI and Waist-to-Hip Ratio are calculated automatically.</div>
 
       <div class="subsection-label">Basic Metrics</div>
       <div class="form-grid three">
-        <div class="field"><label>Height (inches)</label><input type="number" id="bc-height" placeholder="e.g., 68" /></div>
-        <div class="field"><label>Weight (lbs)</label><input type="number" id="bc-weight" placeholder="e.g., 165" /></div>
-        <div class="field"><label>BMI (auto-calculated)</label><input type="text" id="bc-bmi" placeholder="Calculated" readonly style="color: var(--accent);" /></div>
+        <div class="field"><label>Height (inches)</label><input type="number" id="bc-ht" placeholder="e.g., 68" oninput="calcBMI()" /></div>
+        <div class="field"><label>Weight (lbs)</label><input type="number" id="bc-wt" placeholder="e.g., 165" oninput="calcBMI()" /></div>
+        <div class="field"><label>BMI — Auto-Calculated</label><input type="text" id="bc-bmi" class="auto-field" placeholder="Fill height &amp; weight" readonly /></div>
       </div>
 
       <hr class="divider">
       <div class="subsection-label">Circumference Measurements (inches)</div>
       <div class="form-grid three">
-        <div class="field"><label>Neck</label><input type="number" id="circ-neck" placeholder="0.0" step="0.1" oninput="calcWHR()" /></div>
-        <div class="field"><label>Chest</label><input type="number" id="circ-chest" placeholder="0.0" step="0.1" /></div>
-        <div class="field"><label>Arms</label><input type="number" id="circ-arms" placeholder="0.0" step="0.1" /></div>
-        <div class="field"><label>Waist</label><input type="number" id="circ-waist" placeholder="0.0" step="0.1" oninput="calcWHR()" /></div>
-        <div class="field"><label>Hips</label><input type="number" id="circ-hips" placeholder="0.0" step="0.1" oninput="calcWHR()" /></div>
-        <div class="field"><label>Thighs</label><input type="number" id="circ-thighs" placeholder="0.0" step="0.1" /></div>
-        <div class="field"><label>Calves</label><input type="number" id="circ-calves" placeholder="0.0" step="0.1" /></div>
-        <div class="field"><label>Waist-to-Hip Ratio</label><input type="text" id="bc-whr" placeholder="Calculated" readonly style="color: var(--accent);" /></div>
+        <div class="field"><label>Neck</label><input type="number" id="c-neck" placeholder="0.0" step="0.1" /></div>
+        <div class="field"><label>Chest</label><input type="number" id="c-chest" placeholder="0.0" step="0.1" /></div>
+        <div class="field"><label>Arms</label><input type="number" id="c-arms" placeholder="0.0" step="0.1" /></div>
+        <div class="field"><label>Waist</label><input type="number" id="c-waist" placeholder="0.0" step="0.1" oninput="calcWHR()" /></div>
+        <div class="field"><label>Hips</label><input type="number" id="c-hips" placeholder="0.0" step="0.1" oninput="calcWHR()" /></div>
+        <div class="field"><label>Thighs</label><input type="number" id="c-thighs" placeholder="0.0" step="0.1" /></div>
+        <div class="field"><label>Calves</label><input type="number" id="c-calves" placeholder="0.0" step="0.1" /></div>
+        <div class="field"><label>Waist-to-Hip Ratio — Auto</label><input type="text" id="bc-whr" class="auto-field" placeholder="Fill waist &amp; hips" readonly /></div>
       </div>
 
       <hr class="divider">
@@ -714,237 +862,394 @@
       <div class="form-grid three">
         <div class="field"><label>Resting Heart Rate (bpm)</label><input type="number" id="bc-rhr" placeholder="e.g., 68" /></div>
         <div class="field"><label>Blood Pressure (if known)</label><input type="text" id="bc-bp" placeholder="e.g., 120/80" /></div>
-        <div class="field"><label>HRmax Estimate (220 - Age)</label><input type="text" id="bc-hrmax" placeholder="Calculated" readonly style="color: var(--accent);" /></div>
+        <div class="field"><label>HRmax Estimate (220 − Age)</label><input type="text" id="bc-hrmax" class="auto-field" placeholder="Fill age in Step 2" readonly /></div>
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 3: GOALS ─── -->
+  <!-- ── STEP 3: GOALS ────────────────────── -->
   <div class="form-section" id="section-3">
     <div class="section-wrap">
-      <div class="section-title">Goals & Fitness Priorities</div>
-      <div class="section-subtitle">Per Bandura & Simon (1977) — proximal goal-setting is the foundation of your program design</div>
+      <div class="section-eyebrow">Step 4 of 5</div>
+      <div class="section-title">Goals &amp; Fitness Priorities</div>
+      <div class="section-subtitle">Your goals directly shape your program. Be as specific and honest as possible.</div>
 
-      <div class="subsection-label">Goal Importance (0 = Not Important · 10 = Critical)</div>
-      <div style="display:flex; flex-direction:column; gap: 18px; margin-bottom: 36px;">
-        <div class="scale-row"><label>Weight Loss</label><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g1-val').textContent=this.value; updateGoalBar('bar1',this.value)"><span class="scale-val" id="g1-val">5</span></div>
-        <div class="scale-row"><label>Muscle Gain</label><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g2-val').textContent=this.value; updateGoalBar('bar2',this.value)"><span class="scale-val" id="g2-val">5</span></div>
-        <div class="scale-row"><label>Sports Performance</label><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g3-val').textContent=this.value; updateGoalBar('bar3',this.value)"><span class="scale-val" id="g3-val">5</span></div>
-        <div class="scale-row"><label>Health Improvement</label><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g4-val').textContent=this.value; updateGoalBar('bar4',this.value)"><span class="scale-val" id="g4-val">5</span></div>
-        <div class="scale-row"><label>Corrective Exercise / Pain Relief</label><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g5-val').textContent=this.value; updateGoalBar('bar5',this.value)"><span class="scale-val" id="g5-val">5</span></div>
+      <div class="subsection-label">Goal Importance (0 = Not a priority · 10 = Critical)</div>
+      <div style="display:flex; flex-direction:column; gap:1.25rem; margin-bottom:2.25rem;">
+        <div class="scale-row"><span class="scale-lbl">Weight Loss / Fat Loss</span><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g1v').textContent=this.value"><span class="scale-val" id="g1v">5</span></div>
+        <div class="scale-row"><span class="scale-lbl">Muscle Gain / Hypertrophy</span><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g2v').textContent=this.value"><span class="scale-val" id="g2v">5</span></div>
+        <div class="scale-row"><span class="scale-lbl">Sports Performance</span><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g3v').textContent=this.value"><span class="scale-val" id="g3v">5</span></div>
+        <div class="scale-row"><span class="scale-lbl">Overall Health Improvement</span><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g4v').textContent=this.value"><span class="scale-val" id="g4v">5</span></div>
+        <div class="scale-row"><span class="scale-lbl">Pain Relief / Corrective Exercise</span><input type="range" min="0" max="10" value="5" oninput="document.getElementById('g5v').textContent=this.value"><span class="scale-val" id="g5v">5</span></div>
       </div>
 
       <hr class="divider">
-      <div class="subsection-label">Your Primary Goal (in your own words)</div>
-      <div class="form-grid full">
-        <div class="field"><label>What is the #1 outcome you want from training?</label><textarea id="goal-primary" placeholder="e.g., I want to lose 20 lbs before my MBA graduation in May and reduce my lower back pain that has been getting worse from sitting all day..." style="min-height: 100px;"></textarea></div>
-        <div class="field"><label>Timeline / Key Dates</label><input type="text" id="goal-timeline" placeholder="e.g., 16 weeks, event on June 15th..." /></div>
-        <div class="field"><label>Training availability (days/week + preferred times)</label><input type="text" id="goal-availability" placeholder="e.g., 4 days/week, mornings before 8am or evenings after 7pm" /></div>
-        <div class="field"><label>Any constraints or concerns?</label><textarea id="goal-constraints" placeholder="e.g., travel for work 2 weeks/month, right knee bothers me on stairs, budget for gym only..."></textarea></div>
+      <div class="subsection-label">In Your Own Words</div>
+      <div class="form-grid one">
+        <div class="field"><label>What is the #1 outcome you want from training?</label><textarea id="goal-main" style="min-height:110px;" placeholder="Be specific — e.g., 'I want to lose 20 lbs before my MBA graduation in May and reduce the lower back pain that's been getting worse from sitting 9 hours a day.'"></textarea></div>
+        <div class="field"><label>Timeline / Key Dates</label><input type="text" id="goal-time" placeholder="e.g., 16 weeks, event on June 15th, no hard deadline" /></div>
+        <div class="field"><label>Training availability</label><input type="text" id="goal-avail" placeholder="e.g., 4 days/week · mornings before 8am or evenings after 7pm" /></div>
+        <div class="field"><label>Any constraints or concerns?</label><textarea id="goal-constraints" placeholder="e.g., travel 2 weeks/month, right knee bothers me on stairs, apartment gym only…"></textarea></div>
       </div>
 
       <hr class="divider">
-      <div class="subsection-label">Readiness Self-Assessment</div>
-      <p style="font-size:0.74rem; color:var(--gray); margin-bottom:16px;">Per Krause (NASM, 2008) — your stage of readiness determines the optimal coaching approach.</p>
-      <div class="radio-group" id="stage-select">
-        <div class="radio-btn" onclick="selectRadio(this,'stage')">Pre-contemplation<br><small style="color:var(--gray);font-size:0.6rem">Not thinking about change</small></div>
-        <div class="radio-btn" onclick="selectRadio(this,'stage')">Contemplation<br><small style="color:var(--gray);font-size:0.6rem">Thinking about it</small></div>
-        <div class="radio-btn" onclick="selectRadio(this,'stage')">Preparation<br><small style="color:var(--gray);font-size:0.6rem">Planning to start soon</small></div>
-        <div class="radio-btn" onclick="selectRadio(this,'stage')">Action<br><small style="color:var(--gray);font-size:0.6rem">Already making changes</small></div>
-        <div class="radio-btn" onclick="selectRadio(this,'stage')">Maintenance<br><small style="color:var(--gray);font-size:0.6rem">Sustained for 6+ months</small></div>
+      <div class="subsection-label">Your Stage of Readiness</div>
+      <p style="font-size:0.95rem; color:var(--text-gray); margin-bottom:1.25rem; line-height:1.7;">Which best describes where you are right now?</p>
+      <div class="pill-group" style="flex-direction:column; gap:10px;">
+        <div class="pill" onclick="pickPill(this,'stage')" style="text-align:left; padding:14px 20px;"><strong>Pre-contemplation</strong> &nbsp;—&nbsp; I'm not really thinking about making a change yet.</div>
+        <div class="pill" onclick="pickPill(this,'stage')" style="text-align:left; padding:14px 20px;"><strong>Contemplation</strong> &nbsp;—&nbsp; I'm thinking about it but haven't committed yet.</div>
+        <div class="pill" onclick="pickPill(this,'stage')" style="text-align:left; padding:14px 20px;"><strong>Preparation</strong> &nbsp;—&nbsp; I'm planning to start soon and am getting ready.</div>
+        <div class="pill" onclick="pickPill(this,'stage')" style="text-align:left; padding:14px 20px;"><strong>Action</strong> &nbsp;—&nbsp; I've already started making changes.</div>
+        <div class="pill" onclick="pickPill(this,'stage')" style="text-align:left; padding:14px 20px;"><strong>Maintenance</strong> &nbsp;—&nbsp; I've been consistent for 6+ months and want to level up.</div>
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 4: ASSESSMENT VIDEOS ─── -->
+  <!-- ── STEP 4: MOVEMENT ASSESSMENTS ────── -->
   <div class="form-section" id="section-4">
-    <div class="section-wrap">
+    <div class="section-wrap" style="max-width:980px;">
+      <div class="section-eyebrow">Step 5 of 5</div>
       <div class="section-title">Movement Assessments</div>
-      <div class="section-subtitle">Upload short videos of each assessment. Your trainer will perform AI-assisted biomechanical analysis prior to your first session.</div>
+      <div class="section-subtitle">Upload short videos for each movement. Edgar performs AI-assisted biomechanical analysis from your footage before your first session — no in-person assessment needed.</div>
 
-      <div class="upload-note">
-        <strong style="color:var(--accent2);">Recording Instructions:</strong> Film from the ANTERIOR (front) and LATERAL (side) views for each movement. Wear form-fitting clothing. Use a stable surface for your phone. Each video should be 15–30 seconds.
+      <!-- ── HOW TO RECORD — clear, scannable instructions ── -->
+      <div class="video-guide">
+        <div class="video-guide-title">📋 How to Record Your Videos</div>
+        <div class="guide-grid">
+          <div class="guide-col">
+            <h4>Before You Record</h4>
+            <ul class="guide-list">
+              <li>Wear <strong>form-fitting clothing</strong> — shorts and a fitted top so your joints are visible</li>
+              <li>Prop your phone against a wall, chair, or use a stand — <strong>keep it steady</strong></li>
+              <li>Make sure your <strong>full body is in frame</strong> from head to toe</li>
+              <li>Film in <strong>good lighting</strong> — near a window or outdoors works great</li>
+            </ul>
+          </div>
+          <div class="guide-col">
+            <h4>Camera Angles Explained</h4>
+            <ul class="guide-list">
+              <li><strong>Front view:</strong> Camera faces you directly — shows knee and foot alignment</li>
+              <li><strong>Side view:</strong> Camera is at your side — shows back, hip, and shoulder position</li>
+              <li>Most assessments need <strong>both angles</strong>: film front first, then side</li>
+              <li>Keep each clip <strong>15–30 seconds</strong>, about <strong>5 reps</strong> per movement</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phone-tip">
+          <div class="phone-tip-icon">📱</div>
+          <p><strong>On your phone?</strong> Tap any button below — your camera roll opens automatically so you can pick an existing video or record a new one on the spot. No app needed. No email needed. Just tap, select, and you're done.</p>
+        </div>
       </div>
 
-      <br>
+      <!-- Upload cards -->
       <div class="upload-grid">
-        <div class="upload-box" id="upload-ohsa">
-          <input type="file" accept="video/*" onchange="fileUploaded(this,'upload-ohsa','ohsa-status')" />
-          <div class="upload-icon">🏋️</div>
-          <div class="upload-title">Overhead Squat (OHSA)</div>
-          <div class="upload-desc">Arms overhead, squat to parallel. Record 5 reps from anterior + lateral view.</div>
-          <div class="upload-status" id="ohsa-status"></div>
+
+        <div class="upload-card" id="card-ohsa">
+          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-ohsa','st-ohsa')" />
+          <div class="upload-inner">
+            <span class="upload-emoji">🏋️</span>
+            <div class="upload-name">Overhead Squat (OHSA)</div>
+            <div class="upload-what">Arms fully extended overhead · Squat to parallel depth</div>
+            <div class="upload-how">
+              <strong>Front view:</strong> Shows knee &amp; foot alignment<br>
+              <strong>Side view:</strong> Shows back arch &amp; forward lean<br>
+              Film both angles · 5 reps each
+            </div>
+            <div class="upload-cta">Tap to Upload Video</div>
+            <div class="upload-status" id="st-ohsa"></div>
+          </div>
         </div>
 
-        <div class="upload-box" id="upload-slsa">
-          <input type="file" accept="video/*" onchange="fileUploaded(this,'upload-slsa','slsa-status')" />
-          <div class="upload-icon">🦵</div>
-          <div class="upload-title">Single-Leg Squat (SLSA)</div>
-          <div class="upload-desc">Balance on one leg, squat to 60°. Record 3 reps each leg, anterior view.</div>
-          <div class="upload-status" id="slsa-status"></div>
+        <div class="upload-card" id="card-slsa">
+          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-slsa','st-slsa')" />
+          <div class="upload-inner">
+            <span class="upload-emoji">🦵</span>
+            <div class="upload-name">Single-Leg Squat (SLSA)</div>
+            <div class="upload-what">Balance on one leg · Squat to 60° · Left leg first, then right</div>
+            <div class="upload-how">
+              <strong>Front view only</strong> · Camera faces you directly<br>
+              3 reps per leg · film each leg separately
+            </div>
+            <div class="upload-cta">Tap to Upload Video</div>
+            <div class="upload-status" id="st-slsa"></div>
+          </div>
         </div>
 
-        <div class="upload-box" id="upload-push">
-          <input type="file" accept="video/*" onchange="fileUploaded(this,'upload-push','push-status')" />
-          <div class="upload-icon">💪</div>
-          <div class="upload-title">Pushing Assessment</div>
-          <div class="upload-desc">Wall push or push-up. Record lateral view, 5 reps, showing full shoulder range.</div>
-          <div class="upload-status" id="push-status"></div>
+        <div class="upload-card" id="card-push">
+          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-push','st-push')" />
+          <div class="upload-inner">
+            <span class="upload-emoji">💪</span>
+            <div class="upload-name">Pushing Assessment</div>
+            <div class="upload-what">Push-up or wall push · 5 reps at a controlled pace</div>
+            <div class="upload-how">
+              <strong>Side view only</strong> · Camera at your side<br>
+              This shows whether your shoulders elevate or low back arches
+            </div>
+            <div class="upload-cta">Tap to Upload Video</div>
+            <div class="upload-status" id="st-push"></div>
+          </div>
         </div>
 
-        <div class="upload-box" id="upload-pull">
-          <input type="file" accept="video/*" onchange="fileUploaded(this,'upload-pull','pull-status')" />
-          <div class="upload-icon">🤸</div>
-          <div class="upload-title">Pulling Assessment</div>
-          <div class="upload-desc">Band pull-apart or cable row. Record lateral view, 5 reps.</div>
-          <div class="upload-status" id="pull-status"></div>
+        <div class="upload-card" id="card-pull">
+          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-pull','st-pull')" />
+          <div class="upload-inner">
+            <span class="upload-emoji">🤸</span>
+            <div class="upload-name">Pulling Assessment</div>
+            <div class="upload-what">Band pull-apart, cable row, or seated row · 5 reps</div>
+            <div class="upload-how">
+              <strong>Side view only</strong> · Camera at your side<br>
+              Shows scapular retraction and shoulder blade movement
+            </div>
+            <div class="upload-cta">Tap to Upload Video</div>
+            <div class="upload-status" id="st-pull"></div>
+          </div>
         </div>
 
-        <div class="upload-box" id="upload-cardio">
-          <input type="file" accept="video/*" onchange="fileUploaded(this,'upload-cardio','cardio-status')" />
-          <div class="upload-icon">❤️</div>
-          <div class="upload-title">Cardio Test</div>
-          <div class="upload-desc">YMCA 3-min step test OR Rockport Walk Test. Record your form and note your heart rate below.</div>
-          <div class="upload-status" id="cardio-status"></div>
+        <div class="upload-card" id="card-cardio">
+          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-cardio','st-cardio')" />
+          <div class="upload-inner">
+            <span class="upload-emoji">❤️</span>
+            <div class="upload-name">Cardio Test</div>
+            <div class="upload-what">YMCA 3-Min Step Test or Rockport Walk Test</div>
+            <div class="upload-how">
+              Film your <strong>form and effort</strong> during the test<br>
+              Enter your results in the card to the right →
+            </div>
+            <div class="upload-cta">Tap to Upload Video</div>
+            <div class="upload-status" id="st-cardio"></div>
+          </div>
         </div>
 
-        <div class="upload-box" style="cursor:default; border-style:solid; border-color: var(--border);">
-          <div class="upload-icon">📋</div>
-          <div class="upload-title">Cardio Test Results</div>
-          <div class="upload-desc" style="text-align:left;">
-            <div class="form-grid full" style="margin-top:10px;">
-              <div class="field"><label>Test Type</label>
-                <select id="cardio-type" style="font-size:0.7rem; padding:8px 10px;">
-                  <option>YMCA 3-Min Step Test</option>
-                  <option>Rockport Walk Test</option>
-                  <option>1.5 Mile Run</option>
-                  <option>VT1/VT2 Talk Test</option>
-                </select>
-              </div>
-              <div class="field"><label>Recovery HR (bpm)</label><input type="number" id="cardio-hr" placeholder="e.g., 110" /></div>
-              <div class="field"><label>Completion Time (if applicable)</label><input type="text" id="cardio-time" placeholder="e.g., 14:32" /></div>
+        <!-- Cardio results — text fields only -->
+        <div class="results-card">
+          <span class="upload-emoji">📋</span>
+          <div class="upload-name" style="font-size:1rem; font-weight:700; margin-bottom:0.25rem;">Cardio Test Results</div>
+          <div class="upload-what" style="font-size:0.88rem; color:var(--text-gray);">Enter your numbers after completing the test</div>
+          <div class="results-inner">
+            <div class="field">
+              <label>Test Type</label>
+              <select id="cardio-type">
+                <option>YMCA 3-Min Step Test</option>
+                <option>Rockport Walk Test</option>
+                <option>1.5 Mile Run</option>
+                <option>VT1 / VT2 Talk Test</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Recovery Heart Rate (bpm)</label>
+              <input type="number" id="cardio-hr" placeholder="e.g., 110" />
+            </div>
+            <div class="field">
+              <label>Completion Time (if applicable)</label>
+              <input type="text" id="cardio-time" placeholder="e.g., 14:32" />
             </div>
           </div>
         </div>
+
+      </div><!-- end upload-grid -->
+
+      <hr class="divider">
+      <div class="subsection-label">Static Postural Observations</div>
+      <p style="font-size:0.95rem; color:var(--text-gray); margin-bottom:1rem; line-height:1.7;">Check any that you notice about yourself in the mirror or during daily movement.</p>
+      <div class="postural-grid">
+        <div class="check-pill" onclick="toggleCheck(this)"><div class="check-box"></div>Flat feet / arches collapse inward</div>
+        <div class="check-pill" onclick="toggleCheck(this)"><div class="check-box"></div>Feet turn outward when I stand or walk</div>
+        <div class="check-pill" onclick="toggleCheck(this)"><div class="check-box"></div>Knees cave inward (especially when squatting)</div>
+        <div class="check-pill" onclick="toggleCheck(this)"><div class="check-box"></div>I lean excessively forward when squatting</div>
+        <div class="check-pill" onclick="toggleCheck(this)"><div class="check-box"></div>My lower back arches a lot</div>
+        <div class="check-pill" onclick="toggleCheck(this)"><div class="check-box"></div>Shoulders round forward at rest</div>
+        <div class="check-pill" onclick="toggleCheck(this)"><div class="check-box"></div>Head juts forward from my shoulders</div>
+        <div class="check-pill" onclick="toggleCheck(this)"><div class="check-box"></div>One shoulder sits noticeably higher than the other</div>
       </div>
 
       <hr class="divider">
-      <div class="subsection-label">Self-Reported Postural Observations</div>
-      <p style="font-size:0.74rem; color:var(--gray); margin-bottom:20px;">Based on the NASM Static Postural Assessment. Check any that apply to you.</p>
-      <div class="radio-group" style="flex-wrap:wrap; gap:10px;">
-        <div class="radio-btn" onclick="this.classList.toggle('selected')">Flat feet / arches collapse</div>
-        <div class="radio-btn" onclick="this.classList.toggle('selected')">Feet turn out when walking</div>
-        <div class="radio-btn" onclick="this.classList.toggle('selected')">Knees cave inward (valgus)</div>
-        <div class="radio-btn" onclick="this.classList.toggle('selected')">Excessive forward lean</div>
-        <div class="radio-btn" onclick="this.classList.toggle('selected')">Low back arches excessively</div>
-        <div class="radio-btn" onclick="this.classList.toggle('selected')">Shoulders round forward</div>
-        <div class="radio-btn" onclick="this.classList.toggle('selected')">Head juts forward</div>
-        <div class="radio-btn" onclick="this.classList.toggle('selected')">One shoulder higher than other</div>
-      </div>
-
-      <br><br>
       <div class="field">
-        <label>Additional notes for your trainer</label>
-        <textarea id="assessment-notes" placeholder="Any pain, discomfort, or limitations you experienced during these assessments..."></textarea>
+        <label>Additional notes for Edgar</label>
+        <textarea id="notes" placeholder="Any pain, tightness, or limitations you noticed during these assessments. The more detail, the better." style="min-height:100px;"></textarea>
       </div>
     </div>
   </div>
 
-  <!-- Submit Screen -->
+  <!-- Submit confirmation screen -->
   <div class="submit-screen" id="submit-screen">
     <div class="submit-icon">✅</div>
-    <h2>Intake Complete.</h2>
-    <p>Your assessment data has been submitted. Your EC Fitness AI Specialist will review your findings and prepare a pre-session briefing. You'll receive a summary before your first appointment.</p>
-    <div class="processing-bar"><div class="processing-fill"></div></div>
-    <p style="margin-top:16px; font-size:0.68rem;">Analyzing biomechanical data<span class="loading-dots"></span></p>
+    <h2>Intake <span>Complete.</span></h2>
+    <p>Your assessment has been submitted. Edgar has been notified and will review your data before reaching out to confirm next steps and payment details.</p>
+    <div class="progress-wrap"><div class="progress-fill"></div></div>
+    <p style="margin-top:0.5rem; font-size:0.88rem; color:var(--text-gray);">Sending notification<span class="loading-dots"></span></p>
     <br>
-    <button class="btn btn-secondary" onclick="switchView('trainer'); setTimeout(loadDemoClient, 500)">Preview Trainer Dashboard →</button>
+    <a href="ai-trainer.html" style="display:inline-block; margin-top:1rem; color:var(--primary-gold); text-decoration:none; font-size:0.9rem;">← Back to AI Training page</a>
   </div>
 
-  <!-- Form Navigation -->
+  <!-- Form navigation -->
   <div class="form-nav" id="form-nav">
-    <button class="btn btn-secondary" id="btn-back" onclick="prevStep()" style="visibility:hidden;">← Back</button>
-    <span style="font-size:0.65rem; color:var(--gray);" id="step-counter">Step 1 of 5</span>
-    <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Continue →</button>
+    <button class="cta-ghost" id="btn-back" onclick="prevStep()" style="visibility:hidden;">← Back</button>
+    <span class="step-counter" id="step-counter">Step 1 of 5</span>
+    <button class="cta-button" id="btn-next" onclick="nextStep()">Continue →</button>
   </div>
 
-</div><!-- end client view -->
+</div><!-- end view-intake -->
 
 
-<!-- ════════════════════════════════════════
-     TRAINER DASHBOARD VIEW
-════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════
+     VIEW 3 — TRAINER DASHBOARD
+═══════════════════════════════════════ -->
 <div class="view" id="view-trainer">
 
-  <div class="dashboard-header">
-    <div class="dash-label">EC Fitness AI Specialist · Trainer Console</div>
-    <h2>Pre-Session Briefings</h2>
+  <div class="dash-header">
+    <div>
+      <div class="dash-eyebrow">EC Fitness · Trainer Console</div>
+      <h2>Pre-Session Client Briefings</h2>
+    </div>
+    <button class="logout-btn" onclick="logout()">Sign Out</button>
   </div>
 
-  <!-- Client chips -->
-  <div class="client-bar" id="client-bar">
+  <div class="client-bar">
     <div class="client-chip active" onclick="selectClient(this,'demo')" id="chip-demo">
-      <div class="client-avatar">JD</div>
-      <span class="client-name">John D. · Demo</span>
-      <div class="client-flag" style="background:var(--yellow-flag);"></div>
+      <div class="client-avatar">JM</div>
+      <span class="client-name">Jordan M. · Demo</span>
+      <div class="client-dot" style="background:var(--amber);"></div>
     </div>
-    <div style="font-size:0.68rem; color:var(--gray); padding: 0 10px;">← Submitted clients will appear here</div>
+    <span class="chip-hint">← Submitted clients appear here</span>
   </div>
 
-  <!-- AI Generate -->
-  <div class="ai-generate-wrap">
-    <button class="ai-generate-btn" id="ai-gen-btn" onclick="generateAIAnalysis()">
-      <div class="spinner" id="ai-spinner"></div>
-      <span>◆ Generate AI Analysis</span>
+  <div class="ai-bar">
+    <button class="ai-btn" id="ai-btn" onclick="generateAI()">
+      <div class="spinner" id="spinner"></div>
+      ◆ Generate AI Analysis
     </button>
-    <div class="ai-note">Runs the EC Fitness AI Specialist protocol: biomechanical analysis → risk flags → CEX protocol → behavior stage assessment. Powered by Claude Sonnet 4.</div>
+    <div class="ai-note">Runs the EC Fitness AI Specialist protocol: biomechanical review → risk flags → CEX protocol → behavior stage coaching approach.</div>
   </div>
 
-  <!-- AI Response Card -->
   <div class="ai-response" id="ai-response">
-    <div class="ai-response-label">EC Fitness AI Specialist · Analysis Report</div>
-    <div class="ai-response-text" id="ai-response-text"></div>
+    <div class="ai-response-label">◆ EC Fitness AI Specialist · Analysis Report</div>
+    <div class="ai-response-text" id="ai-text"></div>
   </div>
 
-  <!-- Dashboard Grid -->
   <div class="dash-grid" id="dash-grid">
-
     <div class="empty-state">
-      <h3>No client selected</h3>
-      <p>Select a client from the bar above, or submit the intake form to generate a pre-session briefing.</p>
+      <h3>Select a client to view their briefing</h3>
+      <p>Choose a submitted client from the bar above, or use the Demo client to preview the dashboard.</p>
     </div>
-
   </div>
 
-</div><!-- end trainer view -->
+  <footer>
+    <div class="footer-logo"><span style="color:#fff">//</span>EC FITNESS</div>
+    <p class="footer-tagline">Biomechanic Analysis &amp; Research-Grounded Fitness Programming</p>
+    <div class="footer-bottom"><p>&copy; 2026 EC Fitness. All rights reserved.</p></div>
+  </footer>
+
+</div><!-- end view-trainer -->
 
 
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
 <script>
-// ─── STATE ───────────────────────────────────
-let currentStep = 0;
-const totalSteps = 5;
-const parqAnswers = {};
+// ── CREDENTIALS (store securely in production — env vars / backend) ──
+const TRAINER_EMAIL = 'ptwithec@gmail.com';
+const TRAINER_PASS  = 'ECfitness2026!';
+let tfaCode = '';
 
-// ─── VIEW SWITCHING ───────────────────────────
-function switchView(v) {
+// ── VIEW + SCREEN MANAGEMENT ──────────────
+function showView(v) {
   document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   document.getElementById('view-' + v).classList.add('active');
-  document.querySelectorAll('.nav-tab')[v === 'client' ? 0 : 1].classList.add('active');
+  window.scrollTo(0,0);
+}
+function showScreen(id) {
+  ['choiceScreen','loginScreen','tfaScreen'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
 }
 
-// ─── FORM STEPS ──────────────────────────────
-function updateStepper() {
-  for (let i = 0; i < totalSteps; i++) {
-    const s = document.getElementById('step-' + i);
-    s.classList.remove('active','done');
-    if (i < currentStep) s.classList.add('done');
-    else if (i === currentStep) s.classList.add('active');
+// ── AUTH ──────────────────────────────────
+function attemptLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pw    = document.getElementById('loginPw').value;
+  const err   = document.getElementById('loginErr');
+  if (email === TRAINER_EMAIL.toLowerCase() && pw === TRAINER_PASS) {
+    err.style.display = 'none';
+    // Generate 2FA code and (in production) send via email API
+    tfaCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Send 2FA code to trainer email via EmailJS
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_2FA_TEMPLATE_ID', {
+      to_email: TRAINER_EMAIL,
+      code:     tfaCode
+    }).catch(err => console.error('EmailJS 2FA send failed:', err));
+    showScreen('tfaScreen');
+    setTimeout(() => document.querySelector('.tfa-digit').focus(), 100);
+  } else {
+    err.style.display = 'block';
+    document.getElementById('loginPw').value = '';
   }
-  document.getElementById('step-counter').textContent = `Step ${currentStep + 1} of ${totalSteps}`;
-  document.getElementById('btn-back').style.visibility = currentStep > 0 ? 'visible' : 'hidden';
-  document.getElementById('btn-next').textContent = currentStep === totalSteps - 1 ? 'Submit Intake ✓' : 'Continue →';
-  document.getElementById('btn-next').className = currentStep === totalSteps - 1 ? 'btn btn-submit' : 'btn btn-primary';
+}
+
+function verifyTFA() {
+  const entered = Array.from(document.querySelectorAll('.tfa-digit')).map(d => d.value).join('');
+  const err = document.getElementById('tfaErr');
+  if (entered === tfaCode || entered === '123456') { // '123456' = demo fallback
+    err.style.display = 'none';
+    showView('trainer');
+    loadDemo();
+  } else {
+    err.style.display = 'block';
+    document.querySelectorAll('.tfa-digit').forEach(d => d.value = '');
+    document.querySelector('.tfa-digit').focus();
+  }
+}
+
+function resendCode() {
+  tfaCode = Math.floor(100000 + Math.random() * 900000).toString();
+  emailjs.send('YOUR_SERVICE_ID', 'YOUR_2FA_TEMPLATE_ID', {
+    to_email: TRAINER_EMAIL,
+    code:     tfaCode
+  }).then(() => alert('A new code has been sent to your email.'))
+    .catch(() => alert('Could not resend — check your EmailJS setup.'));
+}
+
+function logout() {
+  showView('entry');
+  showScreen('choiceScreen');
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPw').value = '';
+  document.querySelectorAll('.tfa-digit').forEach(d => d.value = '');
+}
+
+// 2FA auto-advance
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.tfa-digit').forEach((d, i, all) => {
+    d.addEventListener('input', () => { if (d.value && i < all.length - 1) all[i+1].focus(); });
+    d.addEventListener('keydown', e => { if (e.key === 'Backspace' && !d.value && i > 0) all[i-1].focus(); });
+  });
+
+  // Default today's date
+  document.getElementById('parq-date').value = new Date().toISOString().split('T')[0];
+  updateStepper();
+
+  // Mobile menu
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    const nl = document.getElementById('navLinks');
+    const open = nl.style.display === 'flex';
+    nl.style.display = open ? 'none' : 'flex';
+    if (!open) Object.assign(nl.style, { flexDirection:'column', position:'absolute', top:'100%', left:'0', right:'0', backgroundColor:'var(--dark-bg)', padding:'1rem', borderTop:'1px solid var(--border-gold)', zIndex:'999' });
+  });
+});
+
+// ── INTAKE STEP MANAGEMENT ────────────────
+let step = 0;
+const TOTAL = 5;
+
+function updateStepper() {
+  for (let i = 0; i < TOTAL; i++) {
+    const el = document.getElementById('step-' + i);
+    el.classList.remove('active','done');
+    if (i < step) el.classList.add('done');
+    else if (i === step) el.classList.add('active');
+  }
+  document.getElementById('step-counter').textContent = `Step ${step + 1} of ${TOTAL}`;
+  document.getElementById('btn-back').style.visibility = step > 0 ? 'visible' : 'hidden';
+  const nb = document.getElementById('btn-next');
+  if (step === TOTAL - 1) { nb.textContent = 'Submit Intake ✓'; nb.className = 'cta-submit'; }
+  else { nb.textContent = 'Continue →'; nb.className = 'cta-button'; }
 }
 
 function showSection(n) {
@@ -953,315 +1258,229 @@ function showSection(n) {
 }
 
 function nextStep() {
-  if (currentStep < totalSteps - 1) {
-    currentStep++;
-    showSection(currentStep);
-    updateStepper();
-    window.scrollTo(0,0);
-  } else {
-    // Submit
-    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-    document.getElementById('form-nav').style.display = 'none';
-    document.getElementById('stepper').style.display = 'none';
-    document.getElementById('submit-screen').classList.add('active');
-    window.scrollTo(0,0);
-  }
+  if (step < TOTAL - 1) { step++; showSection(step); updateStepper(); window.scrollTo(0,0); }
+  else { submitIntake(); }
 }
-
 function prevStep() {
-  if (currentStep > 0) {
-    currentStep--;
-    showSection(currentStep);
-    updateStepper();
-    window.scrollTo(0,0);
-  }
+  if (step > 0) { step--; showSection(step); updateStepper(); window.scrollTo(0,0); }
 }
 
-// ─── PAR-Q TOGGLES ───────────────────────────
+function submitIntake() {
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('form-nav').style.display = 'none';
+  document.getElementById('stepper').style.display = 'none';
+  document.getElementById('submit-screen').classList.add('active');
+  window.scrollTo(0,0);
+  notifyTrainer();
+}
+
+// Trainer notification on intake submit
+function notifyTrainer() {
+  const client = document.getElementById('parq-name').value || 'A new client';
+  const age    = document.getElementById('hh-age').value   || 'not provided';
+  emailjs.send('YOUR_SERVICE_ID', 'YOUR_INTAKE_TEMPLATE_ID', {
+    client_name: client,
+    client_age:  age,
+    message:     client + ' has completed their EC Fitness intake form. Log in to the trainer dashboard to review their biomechanical data and generate their AI analysis.'
+  }).catch(err => console.error('EmailJS notification failed:', err));
+}
+
+// ── FORM INTERACTIONS ─────────────────────
+const ynState = {};
 function toggleYN(btn, key, val) {
-  const group = btn.closest('.toggle-yn');
-  group.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  parqAnswers[key] = val;
-  const d4 = document.getElementById('parq4-detail');
-  const d5 = document.getElementById('parq5-detail');
-  if (key === 'parq4') d4.style.display = val === 'yes' ? 'block' : 'none';
-  if (key === 'parq5') d5.style.display = val === 'yes' ? 'block' : 'none';
+  btn.closest('.yn-wrap').querySelectorAll('.yn-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  ynState[key] = val;
+  const detailMap = { q4:'q4-detail', q5:'q5-detail', q6:'q6-detail' };
+  if (detailMap[key]) document.getElementById(detailMap[key]).style.display = val === 'yes' ? 'block' : 'none';
 }
 
-// ─── RADIO GROUPS ────────────────────────────
-function selectRadio(btn, group) {
-  const parent = btn.closest('.radio-group') || btn.parentElement;
-  parent.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+function pickPill(btn, group) {
+  btn.closest('.pill-group').querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
   btn.classList.add('selected');
 }
 
-// ─── BMI / WHR AUTO-CALC ─────────────────────
-document.addEventListener('input', function(e) {
-  if (['bc-height','bc-weight'].includes(e.target.id)) calcBMI();
-  if (['hh-age'].includes(e.target.id)) calcHRmax();
-});
+function toggleCheck(el) {
+  el.classList.toggle('on');
+  el.querySelector('.check-box').textContent = el.classList.contains('on') ? '✓' : '';
+}
 
+// ── AUTO-CALCULATIONS ─────────────────────
 function calcBMI() {
-  const h = parseFloat(document.getElementById('bc-height').value);
-  const w = parseFloat(document.getElementById('bc-weight').value);
-  if (h && w) {
-    const bmi = ((w / (h * h)) * 703).toFixed(1);
-    document.getElementById('bc-bmi').value = bmi;
-  }
+  const h = parseFloat(document.getElementById('bc-ht').value);
+  const w = parseFloat(document.getElementById('bc-wt').value);
+  document.getElementById('bc-bmi').value = (h && w) ? ((w / (h * h)) * 703).toFixed(1) : '';
 }
 function calcWHR() {
-  const waist = parseFloat(document.getElementById('circ-waist').value);
-  const hips = parseFloat(document.getElementById('circ-hips').value);
-  if (waist && hips) document.getElementById('bc-whr').value = (waist / hips).toFixed(2);
+  const waist = parseFloat(document.getElementById('c-waist').value);
+  const hips  = parseFloat(document.getElementById('c-hips').value);
+  document.getElementById('bc-whr').value = (waist && hips) ? (waist / hips).toFixed(2) : '';
 }
 function calcHRmax() {
   const age = parseFloat(document.getElementById('hh-age').value);
-  if (age) document.getElementById('bc-hrmax').value = Math.round(220 - age) + ' bpm';
+  document.getElementById('bc-hrmax').value = age ? (220 - age) + ' bpm' : '';
 }
 
-function updateGoalBar(id, val) { /* visual only via sliders */ }
-
-// ─── VIDEO UPLOADS ────────────────────────────
-function fileUploaded(input, boxId, statusId) {
+// ── FILE UPLOADS ──────────────────────────
+function uploaded(input, cardId, statusId) {
   if (input.files && input.files[0]) {
-    document.getElementById(boxId).classList.add('has-file');
-    document.getElementById(statusId).textContent = '✓ ' + input.files[0].name;
+    document.getElementById(cardId).classList.add('has-file');
+    const n = input.files[0].name;
+    document.getElementById(statusId).textContent = '✓ ' + (n.length > 28 ? n.slice(0,25) + '…' : n);
   }
 }
 
-// ─── DEMO DASHBOARD DATA ─────────────────────
-const demoClient = {
-  name: "Jordan M.",
-  initials: "JM",
-  age: 34,
-  flagLevel: "yellow",
-  riskFlags: [
-    { level: "yellow", text: "Elevated resting blood pressure reported: 138/88 mmHg. Approaches threshold requiring medical clearance for vigorous exercise.", source: "Per MacDougall et al. (1985) — arterial BP spikes during heavy resistance training; hypertensive clients require physician clearance before maximal loads." },
-    { level: "yellow", text: "Self-reported lower back pain (chronic). History of L4-L5 disc herniation (2021), cleared by physician but not formally rehabilitated with PT.", source: "Per Lombardi & Troxel (2003) — lumbar injuries represent a leading category in weightlifting-related incidents. Corrective protocol required before loading." },
-    { level: "green", text: "PAR-Q+ cleared — answered NO to all 7 general health questions. No cardiovascular contraindications flagged.", source: "Per Tharrett & Peterson (IHRSA) — PAR-Q+ clearance is the minimum standard for initiating a fitness program." },
-    { level: "yellow", text: "Occupation: sedentary desk work 8–10 hrs/day. Confirmed heel-wearing footwear (dress shoes). High postural distortion risk.", source: "Per NASM CPT7 — prolonged sitting is a primary driver of lower crossed syndrome; heel elevation shortens the gastrocnemius/soleus complex." }
+// ══════════════════════════════════════════
+//  TRAINER DASHBOARD — DEMO DATA + RENDER
+// ══════════════════════════════════════════
+const demo = {
+  name: 'Jordan M.', initials: 'JM',
+  flags: [
+    { level:'amber', text:'Elevated resting BP: 138/88 mmHg. Approaches threshold requiring medical clearance for vigorous resistance exercise.', src:'MacDougall et al. (1985) — arterial BP spikes during heavy resistance training; borderline hypertensive clients require physician clearance before maximal loads.' },
+    { level:'amber', text:'L4-L5 disc herniation (2021) — physician-cleared but not formally PT-rehabilitated. Lumbar loading must be progressive and monitored.', src:'Lombardi & Troxel (2003) — lumbar injuries are a leading weightlifting incident category. Corrective protocol required before spinal loading.' },
+    { level:'green',  text:'PAR-Q+ fully cleared — all 7 general health questions answered NO. No cardiovascular contraindications identified.', src:'Tharrett & Peterson (IHRSA) — PAR-Q+ clearance is the minimum standard for initiating a fitness program.' },
+    { level:'amber', text:'Sedentary occupation: desk work 9+ hrs/day, dress shoes daily. Elevated risk for lower crossed syndrome and gastroc/soleus tightness.', src:'NASM CPT7 — prolonged sitting drives lower crossed syndrome; heel elevation chronically shortens the gastroc/soleus complex.' }
   ],
   findings: [
-    { checkpoint: "Feet/Ankle", compensation: "Turn Out", overactive: ["Lateral Gastrocnemius", "Soleus", "Biceps Femoris"], underactive: ["Medial Gastroc", "Post. Tibialis", "Gluteus Maximus"] },
-    { checkpoint: "Knee", compensation: "Valgus (Move In)", overactive: ["Adductor Complex", "TFL", "Vastus Lateralis"], underactive: ["Gluteus Medius", "Gluteus Maximus", "VMO"] },
-    { checkpoint: "LPHC", compensation: "Low Back Arch", overactive: ["Hip Flexors", "Erector Spinae", "Latissimus Dorsi"], underactive: ["Gluteus Maximus", "Hamstrings", "Core Stabilizers"] },
-    { checkpoint: "Upper Body", compensation: "Arms Fall Forward", overactive: ["Latissimus Dorsi", "Teres Major", "Pectoralis Major"], underactive: ["Mid Trapezius", "Lower Trapezius", "Rhomboids"] }
+    { check:'Feet / Ankle', comp:'Turn Out',       over:['Lateral Gastroc','Soleus','Biceps Femoris'],        under:['Medial Gastroc','Post. Tibialis','Gluteus Max'] },
+    { check:'Knee',         comp:'Valgus (Caving)',over:['Adductor Complex','TFL','Vastus Lateralis'],        under:['Glute Medius','Glute Max','VMO'] },
+    { check:'LPHC',         comp:'Low Back Arch',  over:['Hip Flexors','Erector Spinae','Latissimus Dorsi'], under:['Glute Max','Hamstrings','Core Stabilizers'] },
+    { check:'Upper Body',   comp:'Arms Fall Fwd',  over:['Latissimus Dorsi','Teres Major','Pec Major'],      under:['Mid Trap','Lower Trap','Rhomboids'] }
   ],
   cex: {
-    inhibit: ["Foam roll: lateral gastroc/soleus (90 sec each)", "Foam roll: TFL/IT band (60 sec each side)", "Foam roll: thoracic spine (90 sec)", "Foam roll: hip flexors/psoas (60 sec each)"],
-    lengthen: ["Static stretch: gastrocnemius (30 sec × 2)", "Static stretch: hip flexor lunge (30 sec × 2)", "Static stretch: pectoral doorway stretch (30 sec × 2)", "Brettzel stretch: thoracic rotation (30 sec × 2)"],
-    activate: ["Isolated activation: glute bridge (2×15, 2-sec hold)", "Isolated activation: clamshell (2×15 each)", "Isolated activation: prone cobra (2×15)", "Isolated activation: dead bug (2×10 each side)"],
-    integrate: ["Goblet squat with heel elevations (2×12, tempo 3-1-2)", "Cable pull-through (2×12)", "Scapular wall slide (2×15)", "Single-leg RDL bodyweight (2×10 each)"]
+    inhibit:  ['Foam roll: lateral gastroc/soleus (90s each)','Foam roll: TFL/IT band (60s each side)','Foam roll: thoracic spine (90s)','Foam roll: hip flexors/psoas (60s each)'],
+    lengthen: ['Static stretch: gastroc (30s × 2)','Static stretch: hip flexor lunge (30s × 2)','Pectoral doorway stretch (30s × 2)','Brettzel thoracic rotation (30s × 2)'],
+    activate: ['Glute bridge isolated (2×15, 2s hold)','Clamshell (2×15 each side)','Prone cobra (2×15)','Dead bug (2×10 each side)'],
+    integrate:['Goblet squat w/ heel elevation (2×12)','Cable pull-through (2×12)','Scapular wall slide (2×15)','Single-leg RDL bodyweight (2×10 each)']
   },
-  stage: "Preparation",
-  stageIndex: 2,
-  stageDesc: "Client is in the Preparation stage — actively planning to begin training within the next 2–4 weeks. Coaching approach: provide structured, achievable proximal goals (per Bandura & Simon, 1977) that build early confidence. Avoid overwhelming with complex programming in session 1.",
-  goals: [
-    { label: "Weight Loss", score: 8 },
-    { label: "Lower Back Pain Relief", score: 9 },
-    { label: "Muscle Gain", score: 5 },
-    { label: "Health Improvement", score: 7 }
-  ]
+  stage:'Preparation', stageIdx:2,
+  stageDesc:'Preparation stage — planning to begin within 2–4 weeks. High motivation, needs structure. Use Bandura proximal goal framework: set concrete 2-week "win" targets in session 1. Avoid overwhelming with complex programming upfront.',
+  goals:[{label:'Lower Back Pain Relief',score:9},{label:'Weight Loss',score:8},{label:'Health Improvement',score:7},{label:'Muscle Gain',score:5}]
 };
 
-function loadDemoClient() { renderDashboard(demoClient); }
+function loadDemo() { renderDash(demo); }
 
 function selectClient(chip, id) {
   document.querySelectorAll('.client-chip').forEach(c => c.classList.remove('active'));
   chip.classList.add('active');
-  if (id === 'demo') renderDashboard(demoClient);
+  if (id === 'demo') renderDash(demo);
 }
 
-function renderDashboard(client) {
-  const grid = document.getElementById('dash-grid');
-
-  // Risk flags HTML
-  const flagsHTML = client.riskFlags.map(f => `
+function renderDash(c) {
+  const flagsHTML = c.flags.map(f => `
     <div class="flag-item ${f.level}">
       <div class="flag-dot ${f.level}"></div>
-      <div>
-        <div class="flag-text">${f.text}</div>
-        <div class="flag-source">${f.source}</div>
-      </div>
+      <div><div class="flag-text">${f.text}</div><div class="flag-src">${f.src}</div></div>
     </div>`).join('');
 
-  // Findings HTML
-  const findingsHTML = client.findings.map(f => `
+  const findingsHTML = c.findings.map(f => `
     <tr>
-      <td>${f.checkpoint}</td>
-      <td><span class="comp-tag">${f.compensation}</span></td>
-      <td><div class="muscle-list">${f.overactive.map(m=>`<span class="muscle-tag over">${m}</span>`).join('')}</div></td>
-      <td><div class="muscle-list">${f.underactive.map(m=>`<span class="muscle-tag under">${m}</span>`).join('')}</div></td>
+      <td>${f.check}</td>
+      <td><span class="comp-tag">${f.comp}</span></td>
+      <td><div class="mtags">${f.over.map(m=>`<span class="mtag over">${m}</span>`).join('')}</div></td>
+      <td><div class="mtags">${f.under.map(m=>`<span class="mtag under">${m}</span>`).join('')}</div></td>
     </tr>`).join('');
 
-  // Stage meter
-  const stageNames = ['Pre-contemplation','Contemplation','Preparation','Action','Maintenance'];
-  const segs = stageNames.map((n,i) => `<div class="stage-seg ${i <= client.stageIndex ? 'lit' : ''}"></div>`).join('');
-  const stageLabels = stageNames.map(n => `<div class="stage-label-item">${n.substring(0,4)}.</div>`).join('');
-
-  // Goals
-  const goalsHTML = client.goals.map(g => `
+  const stages = ['Pre-contemplation','Contemplation','Preparation','Action','Maintenance'];
+  const segs   = stages.map((_,i) => `<div class="stage-seg${i<=c.stageIdx?' lit':''}"></div>`).join('');
+  const sLbls  = stages.map(n => `<div class="stage-lbl">${n.slice(0,5)}.</div>`).join('');
+  const goalsHTML = c.goals.map(g => `
     <div class="goal-item">
-      <span style="min-width:160px; font-size:0.72rem;">${g.label}</span>
-      <div class="goal-bar-wrap"><div class="goal-bar" style="width:${g.score*10}%"></div></div>
+      <span style="min-width:180px;">${g.label}</span>
+      <div class="goal-bar-bg"><div class="goal-bar" style="width:${g.score*10}%"></div></div>
       <span class="goal-score">${g.score}/10</span>
     </div>`).join('');
 
-  grid.innerHTML = `
-    <!-- Risk Flags -->
+  document.getElementById('dash-grid').innerHTML = `
     <div class="dash-card wide">
-      <div class="card-label">Safety & Risk Assessment <span class="badge badge-yellow">2 FLAGS</span></div>
+      <div class="card-label">Safety &amp; Risk Assessment <span class="badge badge-amber">2 FLAGS</span></div>
       <div class="flag-list">${flagsHTML}</div>
     </div>
-
-    <!-- Behavior Stage -->
     <div class="dash-card">
-      <div class="card-label">Behavior Stage · Goal Alignment</div>
-      <div class="stage-meter">
-        <div class="stage-track">${segs}</div>
-        <div class="stage-labels">${stageLabels}</div>
-      </div>
-      <div class="stage-current">${client.stage}</div>
-      <div class="stage-desc">${client.stageDesc}</div>
+      <div class="card-label">Behavior Stage &amp; Goal Alignment</div>
+      <div class="stage-track">${segs}</div>
+      <div class="stage-lbls">${sLbls}</div>
+      <div class="stage-current">${c.stage}</div>
+      <div class="stage-desc">${c.stageDesc}</div>
       <div class="goal-list">${goalsHTML}</div>
     </div>
-
-    <!-- Biomechanical Findings -->
     <div class="dash-card full">
-      <div class="card-label">Biomechanical Assessment Findings <span class="badge badge-red">4 COMPENSATIONS</span></div>
+      <div class="card-label">Biomechanical Findings <span class="badge badge-red">4 COMPENSATIONS</span></div>
       <table class="findings-table">
-        <thead><tr><th>Checkpoint</th><th>Compensation</th><th>Overactive (Inhibit/Lengthen)</th><th>Underactive (Activate/Integrate)</th></tr></thead>
+        <thead><tr><th>Checkpoint</th><th>Compensation</th><th>Overactive → Inhibit / Lengthen</th><th>Underactive → Activate / Integrate</th></tr></thead>
         <tbody>${findingsHTML}</tbody>
       </table>
-      <div style="margin-top:14px; font-size:0.65rem; color:var(--gray); font-style:italic;">
-        Source: NASM CPT7 Solutions Table · AI_Fitness_Assessment_and_Programming.xlsx
-      </div>
+      <p style="margin-top:1rem; font-size:0.76rem; color:var(--text-gray); font-style:italic;">Source: NASM CPT7 Solutions Table · AI_Fitness_Assessment_and_Programming.xlsx</p>
     </div>
-
-    <!-- CEX Protocol -->
     <div class="dash-card wide">
       <div class="card-label">Corrective Exercise Protocol — CEX Continuum</div>
       <div class="cex-stages">
-        <div class="cex-stage">
-          <div class="cex-stage-num">Stage 1</div>
-          <div class="cex-stage-name">Inhibit</div>
-          ${client.cex.inhibit.map(i=>`<div class="cex-item">${i}</div>`).join('')}
-        </div>
-        <div class="cex-stage">
-          <div class="cex-stage-num">Stage 2</div>
-          <div class="cex-stage-name">Lengthen</div>
-          ${client.cex.lengthen.map(i=>`<div class="cex-item">${i}</div>`).join('')}
-        </div>
-        <div class="cex-stage">
-          <div class="cex-stage-num">Stage 3</div>
-          <div class="cex-stage-name">Activate</div>
-          ${client.cex.activate.map(i=>`<div class="cex-item">${i}</div>`).join('')}
-        </div>
-        <div class="cex-stage">
-          <div class="cex-stage-num">Stage 4</div>
-          <div class="cex-stage-name">Integrate</div>
-          ${client.cex.integrate.map(i=>`<div class="cex-item">${i}</div>`).join('')}
-        </div>
-      </div>
-      <div style="margin-top:14px; font-size:0.65rem; color:var(--gray); font-style:italic;">
-        Per NASM Corrective Exercise Continuum · Inhibit → Lengthen → Activate → Integrate
+        <div class="cex-stage"><div class="cex-stage-num">Stage 1</div><div class="cex-stage-name">Inhibit</div>${c.cex.inhibit.map(i=>`<div class="cex-item">${i}</div>`).join('')}</div>
+        <div class="cex-stage"><div class="cex-stage-num">Stage 2</div><div class="cex-stage-name">Lengthen</div>${c.cex.lengthen.map(i=>`<div class="cex-item">${i}</div>`).join('')}</div>
+        <div class="cex-stage"><div class="cex-stage-num">Stage 3</div><div class="cex-stage-name">Activate</div>${c.cex.activate.map(i=>`<div class="cex-item">${i}</div>`).join('')}</div>
+        <div class="cex-stage"><div class="cex-stage-num">Stage 4</div><div class="cex-stage-name">Integrate</div>${c.cex.integrate.map(i=>`<div class="cex-item">${i}</div>`).join('')}</div>
       </div>
     </div>
-
-    <!-- Session Prep Notes -->
     <div class="dash-card">
-      <div class="card-label">Session 1 Preparation Notes</div>
+      <div class="card-label">Session 1 Prep Notes</div>
       <div class="flag-list">
-        <div class="flag-item yellow">
-          <div class="flag-dot yellow"></div>
-          <div>
-            <div class="flag-text">Confirm BP reading at session start. If ≥140/90, defer loading protocol.</div>
-            <div class="flag-source">MacDougall et al. (1985)</div>
-          </div>
-        </div>
-        <div class="flag-item yellow">
-          <div class="flag-dot yellow"></div>
-          <div>
-            <div class="flag-text">Do NOT begin resistance loading until L4-L5 history is verbally reviewed and client demonstrates pain-free OHSA.</div>
-            <div class="flag-source">Lombardi & Troxel (2003)</div>
-          </div>
-        </div>
-        <div class="flag-item green">
-          <div class="flag-dot green"></div>
-          <div>
-            <div class="flag-text">Use Bandura proximal goal framework: establish 2-week "wins" targets during session 1 goal-setting conversation.</div>
-            <div class="flag-source">Bandura & Simon (1977); Palys & Little (1983)</div>
-          </div>
-        </div>
-        <div class="flag-item green">
-          <div class="flag-dot green"></div>
-          <div>
-            <div class="flag-text">Client is in Preparation stage — high motivation, needs structure. Avoid information overload. One clear action plan.</div>
-            <div class="flag-source">Krause (NASM, 2008)</div>
-          </div>
-        </div>
+        <div class="flag-item amber"><div class="flag-dot amber"></div><div><div class="flag-text">Confirm BP at session start. If ≥140/90, defer loading protocol.</div><div class="flag-src">MacDougall et al. (1985)</div></div></div>
+        <div class="flag-item amber"><div class="flag-dot amber"></div><div><div class="flag-text">Do NOT begin spinal loading until L4-L5 history is reviewed verbally and OHSA is pain-free.</div><div class="flag-src">Lombardi &amp; Troxel (2003)</div></div></div>
+        <div class="flag-item green"><div class="flag-dot green"></div><div><div class="flag-text">Set 2-week proximal goal targets in session 1 — build early confidence and momentum.</div><div class="flag-src">Bandura &amp; Simon (1977)</div></div></div>
+        <div class="flag-item green"><div class="flag-dot green"></div><div><div class="flag-text">Preparation-stage client — high motivation, needs one clear action plan. Avoid info overload.</div><div class="flag-src">Krause (NASM, 2008)</div></div></div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-// ─── AI ANALYSIS ─────────────────────────────
-async function generateAIAnalysis() {
-  const btn = document.getElementById('ai-gen-btn');
-  const spinner = document.getElementById('ai-spinner');
-  const responseDiv = document.getElementById('ai-response');
-  const responseText = document.getElementById('ai-response-text');
+// ── AI ANALYSIS ───────────────────────────
+async function generateAI() {
+  const btn  = document.getElementById('ai-btn');
+  const spin = document.getElementById('spinner');
+  const resp = document.getElementById('ai-response');
+  const text = document.getElementById('ai-text');
 
-  spinner.style.display = 'block';
+  spin.style.display = 'block';
   btn.disabled = true;
-  responseDiv.classList.add('visible');
-  responseText.textContent = 'Generating analysis';
-  responseText.classList.add('loading-dots');
+  resp.classList.add('visible');
+  text.textContent = 'Generating analysis';
+  text.classList.add('loading-dots');
 
   const prompt = `You are the "EC Fitness AI Specialist," a highly advanced biomechanical analyst and research-grounded personal trainer.
 
-CLIENT PROFILE (Demo: Jordan M., Age 34, Sedentary desk worker, 8-10 hrs/day sitting):
+CLIENT PROFILE (Demo: Jordan M., Age 34, sedentary desk worker 9+ hrs/day):
 - PAR-Q+: Cleared (all NO)
 - Blood Pressure: 138/88 mmHg (borderline elevated)
-- Past Injury: L4-L5 disc herniation (2021), physician-cleared but not PT-rehabilitated
+- Past Injury: L4-L5 disc herniation (2021), physician-cleared, not PT-rehabilitated
 - Occupation: Corporate, prolonged sitting, dress shoes daily
 - Behavior Stage: Preparation
 - Top Goals: Lower back pain relief (9/10), Weight loss (8/10), Health improvement (7/10)
 
 OHSA COMPENSATIONS IDENTIFIED:
-1. Feet/Ankle: Turn Out → Overactive: Lateral Gastrocnemius, Soleus, Biceps Femoris | Underactive: Medial Gastroc, Post. Tibialis, Gluteus Maximus
-2. Knee: Valgus → Overactive: Adductor Complex, TFL, Vastus Lateralis | Underactive: Gluteus Medius, Gluteus Maximus, VMO
-3. LPHC: Low Back Arch → Overactive: Hip Flexors, Erector Spinae, Latissimus Dorsi | Underactive: Gluteus Maximus, Hamstrings, Core Stabilizers
-4. Upper Body: Arms Fall Forward → Overactive: Lats, Teres Major, Pectoralis Major | Underactive: Mid/Lower Trapezius, Rhomboids
+1. Feet Turn Out → Overactive: Lateral Gastroc, Soleus, Biceps Femoris | Underactive: Medial Gastroc, Post. Tibialis, Glute Max
+2. Knee Valgus → Overactive: Adductor Complex, TFL, Vastus Lateralis | Underactive: Glute Med, Glute Max, VMO
+3. LPHC Low Back Arch → Overactive: Hip Flexors, Erector Spinae, Lat Dorsi | Underactive: Glute Max, Hamstrings, Core
+4. Arms Fall Forward → Overactive: Lats, Teres Major, Pec Major | Underactive: Mid/Lower Trap, Rhomboids
 
-RESEARCH CITATIONS TO USE:
-- MacDougall et al. (1985): arterial BP response to heavy resistance training
-- Lombardi & Troxel (2003): injury statistics in weightlifting
-- Tharrett & Peterson (IHRSA): risk management and medical clearance
-- Krause (NASM, 2008): behavior modification, stages of change
-- Bandura & Simon (1977): proximal goal-setting
-- Palys & Little (1983): life satisfaction and personal project systems
-- Cappuccio (NASM, 2008): scope of practice
+CITATIONS AVAILABLE: MacDougall et al. (1985), Lombardi & Troxel (2003), Tharrett & Peterson (IHRSA), Krause (NASM 2008), Bandura & Simon (1977), Palys & Little (1983).
 
-Generate a concise pre-session briefing in this exact format:
+Generate a structured pre-session clinical briefing with these four sections:
 
 SECTION 1 — BIOMECHANICAL OBSERVATIONS
-[2-3 key findings from the OHSA, citing NASM Solutions Table]
+[Key findings from OHSA and their functional implications]
 
 SECTION 2 — RISK ASSESSMENT
-[Specific risk flags with research citations]
+[Specific flags with research citations and clinical guidance]
 
-SECTION 3 — CORRECTIVE PROTOCOL PRIORITY ORDER
-[Top 3 priority corrective exercises with stage (Inhibit/Lengthen/Activate/Integrate) and rationale]
+SECTION 3 — CORRECTIVE PROTOCOL PRIORITIES
+[Top 3 corrective exercises with CEX stage and rationale]
 
 SECTION 4 — COACHING APPROACH
-[Behavior stage analysis with Bandura/Krause citations and session 1 strategy]
+[Behavior stage strategy with Bandura/Krause citations]
 
-Be clinical, precise, and cite every claim. No conversational filler.`;
+Use clinical, direct tone. Cite every claim. No filler.`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -1270,25 +1489,18 @@ Be clinical, precise, and cite every claim. No conversational filler.`;
         messages: [{ role: "user", content: prompt }]
       })
     });
-
-    const data = await response.json();
-    const text = data.content.map(i => i.text || "").join("\n");
-    responseText.classList.remove('loading-dots');
-    responseText.textContent = text;
-  } catch (err) {
-    responseText.classList.remove('loading-dots');
-    responseText.textContent = `[API Error: ${err.message}. In a live deployment, this would call the Claude API with the client's full intake data and return a structured clinical briefing.]`;
+    const data = await res.json();
+    const out = data.content.map(i => i.text || '').join('\n');
+    text.classList.remove('loading-dots');
+    text.textContent = out;
+  } catch {
+    text.classList.remove('loading-dots');
+    text.textContent = `[API unavailable in this environment. In live deployment, this generates a full clinical briefing from the client's intake data via Claude Sonnet.]`;
   }
 
-  spinner.style.display = 'none';
+  spin.style.display = 'none';
   btn.disabled = false;
 }
-
-// ─── INIT ─────────────────────────────────────
-updateStepper();
-// Auto-set today's date
-const today = new Date().toISOString().split('T')[0];
-document.getElementById('parq-date').value = today;
 </script>
 </body>
 </html>
