@@ -1523,6 +1523,7 @@ async function loadSubmissions() {
 }
 
 function renderRealClient(s) {
+  currentClientData = s; // store for AI analysis
   const goals = s.goals || {};
   const hh    = s.health_history || {};
   const bc    = s.body_composition || {};
@@ -1605,7 +1606,7 @@ function renderRealClient(s) {
 function selectClient(chip, id) {
   document.querySelectorAll('.client-chip').forEach(c => c.classList.remove('active'));
   chip.classList.add('active');
-  if (id === 'demo') renderDash(demo);
+  if (id === 'demo') { currentClientData = null; renderDash(demo); }
   // real clients are handled by their chip.onclick in loadSubmissions()
 }
 
@@ -1676,6 +1677,9 @@ function renderDash(c) {
 }
 
 // ── AI ANALYSIS ───────────────────────────
+// ── CURRENT CLIENT STATE ─────────────────
+let currentClientData = null; // set when a real client is selected
+
 async function generateAI() {
   const btn  = document.getElementById('ai-btn');
   const spin = document.getElementById('spinner');
@@ -1685,42 +1689,11 @@ async function generateAI() {
   spin.style.display = 'block';
   btn.disabled = true;
   resp.classList.add('visible');
-  text.textContent = 'Generating analysis';
+  text.textContent = 'Generating full client analysis';
   text.classList.add('loading-dots');
 
-  const prompt = `You are the "EC Fitness AI Specialist," a highly advanced biomechanical analyst and research-grounded personal trainer.
-
-CLIENT PROFILE (Demo: Jordan M., Age 34, sedentary desk worker 9+ hrs/day):
-- PAR-Q+: Cleared (all NO)
-- Blood Pressure: 138/88 mmHg (borderline elevated)
-- Past Injury: L4-L5 disc herniation (2021), physician-cleared, not PT-rehabilitated
-- Occupation: Corporate, prolonged sitting, dress shoes daily
-- Behavior Stage: Preparation
-- Top Goals: Lower back pain relief (9/10), Weight loss (8/10), Health improvement (7/10)
-
-OHSA COMPENSATIONS IDENTIFIED:
-1. Feet Turn Out → Overactive: Lateral Gastroc, Soleus, Biceps Femoris | Underactive: Medial Gastroc, Post. Tibialis, Glute Max
-2. Knee Valgus → Overactive: Adductor Complex, TFL, Vastus Lateralis | Underactive: Glute Med, Glute Max, VMO
-3. LPHC Low Back Arch → Overactive: Hip Flexors, Erector Spinae, Lat Dorsi | Underactive: Glute Max, Hamstrings, Core
-4. Arms Fall Forward → Overactive: Lats, Teres Major, Pec Major | Underactive: Mid/Lower Trap, Rhomboids
-
-CITATIONS AVAILABLE: MacDougall et al. (1985), Lombardi & Troxel (2003), Tharrett & Peterson (IHRSA), Krause (NASM 2008), Bandura & Simon (1977), Palys & Little (1983).
-
-Generate a structured pre-session clinical briefing with these four sections:
-
-SECTION 1 — BIOMECHANICAL OBSERVATIONS
-[Key findings from OHSA and their functional implications]
-
-SECTION 2 — RISK ASSESSMENT
-[Specific flags with research citations and clinical guidance]
-
-SECTION 3 — CORRECTIVE PROTOCOL PRIORITIES
-[Top 3 corrective exercises with CEX stage and rationale]
-
-SECTION 4 — COACHING APPROACH
-[Behavior stage strategy with Bandura/Krause citations]
-
-Use clinical, direct tone. Cite every claim. No filler.`;
+  // Build prompt from real client data if available, otherwise use demo
+  const prompt = currentClientData ? buildRealPrompt(currentClientData) : buildDemoPrompt();
 
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -1728,7 +1701,7 @@ Use clinical, direct tone. Cite every claim. No filler.`;
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
+        max_tokens: 2000,
         messages: [{ role: "user", content: prompt }]
       })
     });
@@ -1738,11 +1711,147 @@ Use clinical, direct tone. Cite every claim. No filler.`;
     text.textContent = out;
   } catch {
     text.classList.remove('loading-dots');
-    text.textContent = `[API unavailable in this environment. In live deployment, this generates a full clinical briefing from the client's intake data via Claude Sonnet.]`;
+    text.textContent = '[API unavailable — deploy to live site to activate AI analysis.]';
   }
 
   spin.style.display = 'none';
   btn.disabled = false;
+}
+
+function buildRealPrompt(s) {
+  const hh   = s.health_history    || {};
+  const bc   = s.body_composition  || {};
+  const goals = s.goals            || {};
+  const parq = s.parq_answers      || {};
+
+  // Build risk flags from PAR-Q
+  const riskItems = [];
+  if (parq.q1 === 'yes') riskItems.push('Heart condition or high blood pressure (PAR-Q Q1)');
+  if (parq.q2 === 'yes') riskItems.push('Chest pain at rest or during activity (PAR-Q Q2)');
+  if (parq.q4 === 'yes') riskItems.push('Chronic medical condition: ' + (parq.q4_detail || 'see intake'));
+  if (parq.q5 === 'yes') riskItems.push('Prescribed medications: ' + (parq.q5_detail || 'see intake'));
+  if (parq.q6 === 'yes') riskItems.push('Bone/joint/soft tissue issue: ' + (parq.q6_detail || 'see intake'));
+  if (hh.injuries && hh.injuries.toLowerCase() !== 'none') riskItems.push('Past injuries: ' + hh.injuries);
+  if (hh.surgeries && hh.surgeries.toLowerCase() !== 'none') riskItems.push('Past surgeries: ' + hh.surgeries);
+
+  return `You are the EC Fitness AI Specialist — a highly advanced biomechanical analyst and NASM-certified personal training program designer.
+
+CLIENT PROFILE:
+- Name: ${s.client_name || 'Client'}, Age: ${s.client_age || 'Unknown'}
+- Occupation: ${hh.occupation || 'Not specified'}
+- Exercise history: ${hh.exercise || 'Not provided'} (${hh.days_per_week || '?'} days/week)
+- Height: ${bc.height_in || '?'} in | Weight: ${bc.weight_lbs || '?'} lbs | BMI: ${bc.bmi || '?'}
+- Waist-to-Hip Ratio: ${bc.whr || '?'} | Resting HR: ${bc.rhr || '?'} bpm | BP: ${bc.bp || 'not provided'}
+- HRmax estimate: ${bc.hrmax || '?'}
+
+RISK FLAGS:
+${riskItems.length > 0 ? riskItems.map(r => '- ' + r).join('\n') : '- PAR-Q+ fully cleared, no flags identified'}
+
+HEALTH CONDITIONS: ${hh.conditions || 'None reported'}
+MEDICATIONS: ${hh.medications || 'None reported'}
+
+CLIENT GOALS (in their own words): "${goals.primary_goal || 'Not provided'}"
+Timeline: ${goals.timeline || 'Not specified'}
+Availability: ${goals.availability || 'Not specified'}
+Constraints: ${goals.constraints || 'None noted'}
+
+POSTURAL SELF-REPORT & ASSESSMENT NOTES:
+${s.assessment_notes || 'No additional notes provided'}
+
+LIFESTYLE:
+- Stress level: ${hh.stress_mgmt || 'not noted'}
+- Recreation: ${hh.recreation || 'none noted'}
+
+---
+
+Generate a complete EC Fitness Pre-Session Clinical Briefing with ALL five sections below. Be specific to THIS client's data. Cite every clinical claim. No generic filler.
+
+═══════════════════════════════════════
+SECTION 1 — RISK ASSESSMENT & MEDICAL FLAGS
+═══════════════════════════════════════
+List each flag with: the specific risk, why it matters for training, and the clinical action required before proceeding. Cite research. If no flags, confirm clearance.
+
+═══════════════════════════════════════
+SECTION 2 — BIOMECHANICAL OBSERVATIONS
+═══════════════════════════════════════
+Based on their postural self-report, occupation, and lifestyle, identify the most likely movement dysfunctions using the NASM Corrective Exercise Continuum framework. Name the probable overactive and underactive muscle groups. Explain the functional implications for their training.
+
+═══════════════════════════════════════
+SECTION 3 — CORRECTIVE EXERCISE PROTOCOL (CEX)
+═══════════════════════════════════════
+Build a corrective warmup sequence using all 4 CEX stages:
+INHIBIT: (foam rolling — name muscles, duration)
+LENGTHEN: (static stretching — name muscles, duration, sets)
+ACTIVATE: (isolated strengthening — name exercises, sets, reps, tempo)
+INTEGRATE: (integrated dynamic movements — name exercises, sets, reps)
+Justify each choice based on this client's specific dysfunction profile.
+
+═══════════════════════════════════════
+SECTION 4 — BEHAVIOR STAGE STRATEGY
+═══════════════════════════════════════
+Identify their transtheoretical behavior stage based on their goals and history. Prescribe the optimal coaching approach using Bandura & Simon (1977) proximal goal-setting and Krause (NASM 2008) stage-matched intervention strategies.
+
+═══════════════════════════════════════
+SECTION 5 — WEEK 1 TRAINING PROGRAM
+═══════════════════════════════════════
+Design a complete Week 1 program based on their availability, goals, fitness level, and dysfunction profile. For each training day include:
+- Day focus (e.g., Lower Body Corrective Strength)
+- Corrective warmup (from Section 3)
+- Main training block: exercise name, sets × reps, tempo, rest period
+- Cool-down
+
+Choose NASM OPT Phase 1 (Stabilization Endurance) or Phase 2 (Strength Endurance) based on their profile. Justify the phase selection. Use realistic, achievable loads and volumes for their fitness level.`;
+}
+
+function buildDemoPrompt() {
+  return `You are the EC Fitness AI Specialist — a highly advanced biomechanical analyst and NASM-certified personal training program designer.
+
+CLIENT PROFILE (Demo: Jordan M., Age 34, sedentary desk worker 9+ hrs/day, dress shoes daily):
+- Height: 5'10" | Weight: 192 lbs | BMI: 27.6 | WHR: 0.91 | RHR: 74 bpm | BP: 138/88 mmHg
+- HRmax estimate: 186 bpm
+
+RISK FLAGS:
+- Borderline elevated BP: 138/88 mmHg (approaches Stage 1 hypertension threshold)
+- L4-L5 disc herniation (2021) — physician-cleared, not formally PT-rehabilitated
+- Prolonged sitting 9+ hrs/day with daily heel elevation (dress shoes)
+
+CLIENT GOALS: "I want to lose 20 lbs before my MBA graduation in May and fix the lower back pain that gets worse every time I sit through long meetings."
+Timeline: 16 weeks | Availability: 4 days/week, evenings after 7pm
+Constraints: Apartment gym only, right knee mildly irritated on stairs
+
+OHSA COMPENSATIONS:
+1. Feet turn out — Overactive: Lateral Gastroc, Soleus, Biceps Femoris | Underactive: Medial Gastroc, Post. Tibialis, Glute Max
+2. Knee valgus — Overactive: Adductor Complex, TFL | Underactive: Glute Med, Glute Max, VMO
+3. Low back arches — Overactive: Hip Flexors, Erector Spinae, Lat Dorsi | Underactive: Glute Max, Hamstrings, Core Stabilizers
+4. Arms fall forward — Overactive: Lats, Teres Major, Pec Major | Underactive: Mid/Lower Trap, Rhomboids
+
+BEHAVIOR STAGE: Preparation (planning to start, high motivation, needs structure)
+
+---
+
+Generate a complete EC Fitness Pre-Session Clinical Briefing with ALL five sections. Cite every clinical claim. Be specific and actionable.
+
+═══════════════════════════════════════
+SECTION 1 — RISK ASSESSMENT & MEDICAL FLAGS
+═══════════════════════════════════════
+
+═══════════════════════════════════════
+SECTION 2 — BIOMECHANICAL OBSERVATIONS
+═══════════════════════════════════════
+
+═══════════════════════════════════════
+SECTION 3 — CORRECTIVE EXERCISE PROTOCOL (CEX)
+═══════════════════════════════════════
+INHIBIT → LENGTHEN → ACTIVATE → INTEGRATE
+
+═══════════════════════════════════════
+SECTION 4 — BEHAVIOR STAGE STRATEGY
+═══════════════════════════════════════
+
+═══════════════════════════════════════
+SECTION 5 — WEEK 1 TRAINING PROGRAM
+═══════════════════════════════════════
+4 days, apartment gym, NASM OPT Phase selection with justification. Full exercise prescription: sets × reps, tempo, rest.`;
 }
 </script>
 </body>
