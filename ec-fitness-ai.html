@@ -262,6 +262,11 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
 .guide-list li { display: flex; gap: 10px; font-size: 0.92rem; color: var(--text-gray); line-height: 1.5; align-items: baseline; }
 .guide-list li::before { content:"→"; color: var(--primary-gold); font-weight: 700; flex-shrink: 0; }
 .guide-list li strong { color: var(--text-light); white-space: nowrap; }
+.step-num-inline { color: var(--primary-gold); font-weight: 700; flex-shrink: 0; min-width: 18px; }
+.angle-block { margin-bottom: 1rem; }
+.angle-block:last-child { margin-bottom: 0; }
+.angle-label { font-size: 0.88rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.3rem; }
+.angle-desc { font-size: 0.88rem; color: var(--text-gray); line-height: 1.6; }
 .phone-tip {
   display: flex; gap: 12px; align-items: flex-start;
   margin-top: 1.5rem; padding: 1rem 1.25rem;
@@ -566,7 +571,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
     <!-- Intake choice screen -->
     <div id="choiceScreen" style="width:100%; max-width:480px;">
       <div class="entry-card">
-        <div class="entry-logo"><span style="color:#fff">//</span>EC FITNESS</div>
+        <a href="index.html" class="entry-logo" style="text-decoration:none; display:block;"><span style="color:#fff">//</span>EC FITNESS</a>
         <div class="entry-sub">Pre-Session Intake &amp; Trainer Portal</div>
 
         <button class="cta-button" style="width:100%; font-size:1rem; padding:16px;" onclick="showView('intake')">
@@ -584,7 +589,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
     <!-- Trainer login screen -->
     <div id="loginScreen" style="display:none; width:100%; max-width:480px;">
       <div class="entry-card">
-        <div class="entry-logo"><span style="color:#fff">//</span>EC FITNESS</div>
+        <a href="index.html" class="entry-logo" style="text-decoration:none; display:block;"><span style="color:#fff">//</span>EC FITNESS</a>
         <div class="entry-sub">Trainer Dashboard Access</div>
 
         <div class="lfield">
@@ -607,7 +612,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
     <!-- 2FA screen -->
     <div id="tfaScreen" style="display:none; width:100%; max-width:480px;">
       <div class="entry-card">
-        <div class="entry-logo"><span style="color:#fff">//</span>EC FITNESS</div>
+        <a href="index.html" class="entry-logo" style="text-decoration:none; display:block;"><span style="color:#fff">//</span>EC FITNESS</a>
         <div class="entry-sub">Two-Step Verification</div>
         <p class="tfa-hint">A 6-digit code was sent to your email. Enter it below to access the trainer dashboard.</p>
         <div class="tfa-row" id="tfaRow">
@@ -919,25 +924,32 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
         <div class="guide-col">
             <h4>Before You Record</h4>
             <ul class="guide-list">
-              <li>Wear <strong>form-fitting clothing</strong> — shorts and a fitted top so your joints are visible</li>
-              <li><strong>Prop your phone</strong> against a wall, chair, or use a stand — keep it steady</li>
-              <li>Make sure your <strong>full body is in frame</strong> from head to toe</li>
-              <li>Film in <strong>good lighting</strong> — near a window or outdoors works great</li>
+              <li><span class="step-num-inline">1.</span> Wear <strong>form-fitting clothing</strong> — shorts and a fitted top so your joints are clearly visible.</li>
+              <li><span class="step-num-inline">2.</span> Prop your phone against a wall or chair, or use a stand. Keep it <strong>stable and hands-free</strong>.</li>
+              <li><span class="step-num-inline">3.</span> Make sure your <strong>full body is in frame</strong> — head to toe, with a little room on each side.</li>
+              <li><span class="step-num-inline">4.</span> Film in <strong>good lighting</strong>. Near a window or outdoors works perfectly.</li>
+              <li><span class="step-num-inline">5.</span> Do <strong>5 reps</strong> per movement and keep each clip to <strong>15–30 seconds</strong>.</li>
             </ul>
           </div>
           <div class="guide-col">
             <h4>Camera Angles Explained</h4>
-            <ul class="guide-list">
-              <li><strong>Front view:</strong> Camera faces you directly — shows knee and foot alignment</li>
-              <li><strong>Side view:</strong> Camera is at your side — shows back, hip, and shoulder position</li>
-              <li>Most assessments need <strong>both angles</strong> — film front first, then side</li>
-              <li>Keep each clip <strong>15–30 seconds</strong>, about <strong>5 reps</strong> per movement</li>
-            </ul>
+            <div class="angle-block">
+              <div class="angle-label">📷 Front View (Anterior)</div>
+              <div class="angle-desc">Camera faces you directly from the front. Shows whether your knees cave in or your feet turn out.</div>
+            </div>
+            <div class="angle-block">
+              <div class="angle-label">📷 Side View (Lateral)</div>
+              <div class="angle-desc">Camera is directly to your side. Shows forward lean, low back arch, and shoulder position.</div>
+            </div>
+            <div class="angle-block">
+              <div class="angle-label">📌 Most assessments need both angles.</div>
+              <div class="angle-desc">Film the front view first, then reposition and film the side. Each card below tells you exactly which angles to use.</div>
+            </div>
           </div>
         </div>
         <div class="phone-tip">
           <div class="phone-tip-icon">📱</div>
-          <p><strong>On your phone?</strong> Tap any button below — your camera roll opens automatically so you can pick an existing video or record a new one on the spot. No app needed. No email needed. Just tap, select, and you're done.</p>
+          <p><strong>On your phone?</strong> Tap any button below — your camera roll opens automatically so you can pick an existing video or record a new one on the spot. No app needed. Just tap, select, and you're done.</p>
         </div>
       </div>
 
@@ -1134,7 +1146,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
   </div>
 
   <footer>
-    <div class="footer-logo"><span style="color:#fff">//</span>EC FITNESS</div>
+    <a href="index.html" class="footer-logo" style="text-decoration:none; display:block;"><span style="color:#fff">//</span>EC FITNESS</a>
     <p class="footer-tagline">Biomechanic Analysis &amp; Research-Grounded Fitness Programming</p>
     <div class="footer-bottom"><p>&copy; 2026 EC Fitness. All rights reserved.</p></div>
   </footer>
