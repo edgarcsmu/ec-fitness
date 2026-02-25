@@ -7,7 +7,7 @@
 <!-- EmailJS SDK — sends intake notifications to trainer -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  (function(){ emailjs.init({ publicKey: 'YOUR_EMAILJS_PUBLIC_KEY' }); })();
+  (function(){ emailjs.init({ publicKey: 't_et8P0ReUizPYZln' }); })();
 </script>
 <!-- Supabase SDK — auth + database -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -972,7 +972,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
       <div class="upload-grid">
 
         <div class="upload-card" id="card-ohsa">
-          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-ohsa','st-ohsa')" />
+          <input type="file" accept="video/*" onchange="uploaded(this,'card-ohsa','st-ohsa')" />
           <div class="upload-inner">
             <span class="upload-emoji">🏋️</span>
             <div class="upload-name">Overhead Squat (OHSA)</div>
@@ -988,7 +988,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
         </div>
 
         <div class="upload-card" id="card-slsa">
-          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-slsa','st-slsa')" />
+          <input type="file" accept="video/*" onchange="uploaded(this,'card-slsa','st-slsa')" />
           <div class="upload-inner">
             <span class="upload-emoji">🦵</span>
             <div class="upload-name">Single-Leg Squat (SLSA)</div>
@@ -1003,7 +1003,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
         </div>
 
         <div class="upload-card" id="card-push">
-          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-push','st-push')" />
+          <input type="file" accept="video/*" onchange="uploaded(this,'card-push','st-push')" />
           <div class="upload-inner">
             <span class="upload-emoji">💪</span>
             <div class="upload-name">Pushing Assessment</div>
@@ -1018,7 +1018,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
         </div>
 
         <div class="upload-card" id="card-pull">
-          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-pull','st-pull')" />
+          <input type="file" accept="video/*" onchange="uploaded(this,'card-pull','st-pull')" />
           <div class="upload-inner">
             <span class="upload-emoji">🤸</span>
             <div class="upload-name">Pulling Assessment</div>
@@ -1033,7 +1033,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
         </div>
 
         <div class="upload-card" id="card-cardio">
-          <input type="file" accept="video/*" capture="environment" onchange="uploaded(this,'card-cardio','st-cardio')" />
+          <input type="file" accept="video/*" onchange="uploaded(this,'card-cardio','st-cardio')" />
           <div class="upload-inner">
             <span class="upload-emoji">❤️</span>
             <div class="upload-name">Cardio Test</div>
@@ -1103,7 +1103,7 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
     <h2>Intake <span>Complete.</span></h2>
     <p>Your assessment has been submitted. Edgar has been notified and will review your data before reaching out to confirm next steps and payment details.</p>
     <div class="progress-wrap"><div class="progress-fill"></div></div>
-    <p style="margin-top:0.5rem; font-size:0.88rem; color:var(--text-gray);">Sending notification<span class="loading-dots"></span></p>
+    <p id="notify-status" style="margin-top:0.5rem; font-size:0.88rem; color:var(--text-gray);">Saving your submission...</p>
     <br>
     <a href="ai-trainer.html" style="display:inline-block; margin-top:1rem; color:var(--primary-gold); text-decoration:none; font-size:0.9rem;">← Back to AI Training page</a>
   </div>
@@ -1404,12 +1404,26 @@ async function submitIntake() {
   const { error } = await sb.from('intake_submissions').insert([payload]);
   if (error) console.error('Supabase insert error:', error.message);
 
-  // Email notification to trainer
-  emailjs.send('YOUR_SERVICE_ID', 'YOUR_INTAKE_TEMPLATE_ID', {
-    client_name: clientName,
-    client_age:  clientAge || 'not provided',
-    message:     clientName + ' has completed their EC Fitness intake form. Log in to your trainer dashboard to review their data and generate their AI analysis.'
-  }).catch(e => console.error('EmailJS error:', e));
+  // Update the submit screen status text
+  const notifyEl = document.getElementById('notify-status');
+
+  // Email notification to trainer via EmailJS
+  const ejsServiceId  = 'service_z3s7znt';
+  const ejsTemplateId = 'template_lcxggk8';
+
+  if (!ejsServiceId.includes('YOUR')) {
+    emailjs.send(ejsServiceId, ejsTemplateId, {
+      client_name: clientName,
+      client_age:  clientAge || 'not provided',
+      message:     clientName + ' has completed their EC Fitness intake form. Log in to your trainer dashboard to review.'
+    }).then(() => {
+      if (notifyEl) notifyEl.textContent = '✓ Edgar has been notified by email.';
+    }).catch(() => {
+      if (notifyEl) notifyEl.textContent = '✓ Submission saved. Check your trainer dashboard.';
+    });
+  } else {
+    if (notifyEl) notifyEl.textContent = '✓ Submission saved securely to your trainer dashboard.';
+  }
 }
 
 // ── FORM INTERACTIONS ─────────────────────
@@ -1707,7 +1721,7 @@ async function generateAI() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "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",
+        "x-api-key": "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",
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
