@@ -1717,6 +1717,13 @@ async function generateAI() {
       })
     });
     const data = await res.json();
+    if (data.error) {
+      text.classList.remove('loading-dots');
+      text.textContent = '[API Error: ' + data.error.message + ']';
+      spin.style.display = 'none';
+      btn.disabled = false;
+      return;
+    }
     const out = data.content.map(i => i.text || '').join('\n');
     text.classList.remove('loading-dots');
     text.textContent = out;
