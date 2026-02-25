@@ -1021,6 +1021,7 @@
 
             <div class="chatbot-options" id="chatbotOptions">
                 <button class="chatbot-option-btn" data-question="services">What services do you offer?</button>
+                <button class="chatbot-option-btn" data-question="ai">What is AI Training?</button>
                 <button class="chatbot-option-btn" data-question="pricing">What are your rates?</button>
                 <button class="chatbot-option-btn" data-question="credentials">Tell me about Edgar's credentials</button>
                 <button class="chatbot-option-btn" data-question="location">Where are you located?</button>
@@ -1051,17 +1052,19 @@
         const chatbotSend = document.getElementById('chatbotSend');
 
         const responses = {
-            services: "EC Fitness offers four main services:\n\n1. One-on-One Personal Training - Individualized coaching with comprehensive movement screening\n2. Subscription-Based Program Design - Structured 3-4 month programs for independent training\n3. Group Fitness Instruction - Contracted group training (minimum 1 month advance booking)\n4. Goal-Setting Consultations - Strategic planning sessions for your fitness journey\n\nWould you like to know more about any specific service?",
-            
-            pricing: "EC Fitness offers two clear options:\n\n◆ AI-Assisted Remote Program — $200 flat fee. Complete your full intake online, Edgar reviews your biomechanical analysis and delivers a custom written program within 48 hrs.\n\n◆ 1:1 Personal Training — The $200 applies as a credit toward any training package. Session 1 starts as real training, not consultation.\n\nVisit the AI Training tab to get started!",
-            
+            services: "EC Fitness offers five services:\n\n1. 🤖 AI-Assisted Remote Program — $200 flat fee. Complete your intake online, Edgar reviews your biomechanical data and delivers a custom program within 48 hrs.\n2. 💪 One-on-One Personal Training — The $200 AI intake credit applies toward your package. Session 1 is pure training, not paperwork.\n3. 📋 Subscription-Based Program Design — Structured 3-4 month programs for independent training.\n4. 👥 Group Fitness Instruction — Contracted group training (minimum 1 month advance booking).\n5. 🎯 Goal-Setting Consultations — Strategic planning sessions for your fitness journey.\n\nWould you like to know more about any specific service?",
+
+            ai: "The AI Training program is how EC Fitness gets to know your body before you ever step foot in a session.\n\nHere's how it works:\n\n◆ You complete a full intake at home — PAR-Q+ health screening, lifestyle history, body composition, and short movement videos\n◆ Edgar uses AI-assisted biomechanical analysis to identify compensations, overactive/underactive muscles, and risk factors\n◆ Within 48 hours you receive a fully custom program: corrective protocol, periodized strength plan, cardio prescription, and coaching notes\n\n💰 $200 flat fee — or apply it as full credit toward 1:1 personal training.\n\nWant to get started?",
+
+            pricing: "EC Fitness offers two clear options:\n\n◆ AI-Assisted Remote Program — $200 flat fee. Complete your full intake online, Edgar reviews your biomechanical analysis and delivers a custom written program within 48 hrs.\n\n◆ 1:1 Personal Training — The $200 applies as a full credit toward any training package. Session 1 starts as real training, not a consultation.\n\nVisit the AI Training tab to get started!",
+
             credentials: "Edgar Cruz is:\n• NASM Certified Personal Trainer (CPT)\n• Senior Fitness Specialist\n• StrongFirst Bodyweight Specialist\n• Animal Flow L1 Certified Instructor\n\nHis training philosophy integrates biomechanics, strength science, motor control, and progressive conditioning into individualized programs. All methods are evidence-based and grounded in sports science research.",
-            
-            location: "EC Fitness is based in Dallas, Texas. Training sessions are held at nearby off-campus facilities. The exact location is provided after booking to ensure convenience for your schedule.\n\nVirtual consultations are also available!",
-            
-            booking: "Ready to start? You can book your initial consultation directly through our booking page. This 60-75 minute session includes:\n\n• Comprehensive movement screening\n• Goal clarification\n• Training strategy discussion\n• Q&A about programs\n\nWould you like me to take you to the booking page?",
-            
-            default: "That's a great question! For detailed information, I recommend:\n\n1. Starting your intake at our AI Training page — it's the fastest way to get started\n2. Booking a session to discuss your goals\n3. Calling or texting Edgar at 972-408-5053\n\nIs there anything else I can help with?"
+
+            location: "EC Fitness is based in Dallas, Texas. Training sessions are held at nearby facilities — the exact location is provided after booking.\n\nThe AI-Assisted Remote Program is available anywhere — no in-person visit required!",
+
+            booking: "Ready to start? You can book directly through our booking page. Your first session includes:\n\n• Comprehensive movement screening\n• Goal clarification\n• Training strategy discussion\n• Q&A about your program\n\nOr skip straight to the AI Training intake — complete it at home and Edgar will have your full profile ready before you arrive.\n\nWould you like to go to the booking page or start your intake?",
+
+            default: "That's a great question! For detailed information, I recommend:\n\n1. Starting your AI Training intake — it's the fastest way to get a custom program\n2. Booking a session to train with Edgar in person\n3. Calling or texting Edgar at 972-408-5053\n\nIs there anything else I can help with?"
         };
 
         chatbotToggle.addEventListener('click', () => {
@@ -1087,6 +1090,11 @@
                     if (question === 'booking') {
                         setTimeout(() => {
                             addBookingButton();
+                        }, 500);
+                    }
+                    if (question === 'ai') {
+                        setTimeout(() => {
+                            addIntakeButton();
                         }, 500);
                     }
                 }, 1000);
@@ -1121,11 +1129,14 @@
             
             if (lower.includes('service') || lower.includes('offer') || lower.includes('do you do')) {
                 return responses.services;
-            } else if (lower.includes('price') || lower.includes('cost') || lower.includes('rate') || lower.includes('fee')) {
+            } else if (lower.includes('ai') || lower.includes('artificial') || lower.includes('intake') || lower.includes('remote') || lower.includes('online') || lower.includes('biomechan') || lower.includes('program') || lower.includes('how does it work')) {
+                setTimeout(() => addIntakeButton(), 500);
+                return responses.ai;
+            } else if (lower.includes('price') || lower.includes('cost') || lower.includes('rate') || lower.includes('fee') || lower.includes('how much') || lower.includes('$') || lower.includes('200')) {
                 return responses.pricing;
             } else if (lower.includes('credential') || lower.includes('certif') || lower.includes('qualification') || lower.includes('edgar')) {
                 return responses.credentials;
-            } else if (lower.includes('where') || lower.includes('location') || lower.includes('address')) {
+            } else if (lower.includes('where') || lower.includes('location') || lower.includes('address') || lower.includes('dallas')) {
                 return responses.location;
             } else if (lower.includes('book') || lower.includes('schedule') || lower.includes('appointment') || lower.includes('consultation')) {
                 setTimeout(() => addBookingButton(), 500);
@@ -1178,6 +1189,20 @@
             const bubbleDiv = document.createElement('div');
             bubbleDiv.className = 'message-bubble';
             bubbleDiv.innerHTML = '<a href="booking.html" style="color: var(--primary-gold); text-decoration: underline; font-weight: 700;">Click here to book your consultation →</a>';
+            
+            messageDiv.appendChild(bubbleDiv);
+            chatbotMessages.appendChild(messageDiv);
+            
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function addIntakeButton() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chatbot-message bot';
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.innerHTML = '<a href="ec-fitness-ai.html" style="color: var(--primary-gold); text-decoration: underline; font-weight: 700;">Start your AI Training intake →</a>';
             
             messageDiv.appendChild(bubbleDiv);
             chatbotMessages.appendChild(messageDiv);
