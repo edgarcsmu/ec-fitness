@@ -1230,6 +1230,13 @@ async function verifyTFA() {
   const err   = document.getElementById('tfaErr');
   err.style.display = 'none';
 
+  // Demo bypass for testing — remove before going live with real clients
+  if (token === '123456') {
+    showView('trainer');
+    await loadSubmissions();
+    return;
+  }
+
   // Verify OTP against Supabase — this creates the real authenticated session
   const { data, error } = await sb.auth.verifyOtp({
     email: pendingEmail,
