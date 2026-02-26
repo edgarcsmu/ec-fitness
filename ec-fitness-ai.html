@@ -1141,11 +1141,19 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
   </div>
 
   <div class="ai-bar">
-    <button class="ai-btn" id="ai-btn" onclick="generateAI()">
-      <div class="spinner" id="spinner"></div>
-      ◆ Generate AI Analysis
-    </button>
-    <div class="ai-note">Runs the EC Fitness AI Specialist protocol: biomechanical review → risk flags → CEX protocol → behavior stage coaching approach.</div>
+    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; width:100%;">
+      <input type="password" id="runtime-api-key" placeholder="🔑 Paste API key here to activate AI" style="
+        flex:1; min-width:260px; padding:0.6rem 1rem;
+        background:#1a1a1a; border:2px solid #D4AF37; border-radius:6px;
+        color:#fff; font-size:0.85rem; font-family:inherit;
+        outline:none; transition:border 0.2s;
+      " onfocus="this.style.borderColor='#fff'" onblur="this.style.borderColor='#D4AF37'" />
+      <button class="ai-btn" id="ai-btn" onclick="generateAI()">
+        <div class="spinner" id="spinner"></div>
+        ◆ Generate AI Analysis
+      </button>
+    </div>
+    <div class="ai-note" style="margin-top:0.5rem;">Runs the EC Fitness AI Specialist protocol: biomechanical review → risk flags → CEX protocol → behavior stage coaching approach.</div>
   </div>
 
   <div class="ai-response" id="ai-response">
@@ -1716,11 +1724,28 @@ async function generateAI() {
   // Build prompt from real client data if available, otherwise use demo
   const prompt = currentClientData ? buildRealPrompt(currentClientData) : buildDemoPrompt();
 
+  const apiKey = document.getElementById('runtime-api-key').value.trim();
+  if (!apiKey) {
+    text.classList.remove('loading-dots');
+    text.textContent = '[Please paste your Anthropic API key in the field above first.]';
+    spin.style.display = 'none';
+    btn.disabled = false;
+    return;
+  }
+
   try {
-    const res = await fetch("https://courageous-mermaid-60ce31.netlify.app/.netlify/functions/ai-analysis", {
+    const res = await fetch("https://corsproxy.io/?https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt })
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 2000,
+        messages: [{ role: "user", content: prompt }]
+      })
     });
     const data = await res.json();
     if (data.error) {
