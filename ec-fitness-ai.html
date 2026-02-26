@@ -1141,19 +1141,21 @@ footer { background: var(--darker-bg); border-top: 1px solid var(--border-gold);
   </div>
 
   <div class="ai-bar">
-    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; width:100%;">
-      <input type="password" id="runtime-api-key" placeholder="🔑 Paste API key here to activate AI" style="
-        flex:1; min-width:260px; padding:0.6rem 1rem;
+    <div style="margin-bottom:0.75rem;">
+      <input type="password" id="runtime-api-key" placeholder="🔑 Paste Anthropic API key here to activate AI Analysis" style="
+        width:100%; box-sizing:border-box; padding:0.75rem 1rem;
         background:#1a1a1a; border:2px solid #D4AF37; border-radius:6px;
-        color:#fff; font-size:0.85rem; font-family:inherit;
-        outline:none; transition:border 0.2s;
-      " onfocus="this.style.borderColor='#fff'" onblur="this.style.borderColor='#D4AF37'" />
+        color:#fff; font-size:0.9rem; font-family:inherit;
+        outline:none;
+      " />
+    </div>
+    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
       <button class="ai-btn" id="ai-btn" onclick="generateAI()">
         <div class="spinner" id="spinner"></div>
         ◆ Generate AI Analysis
       </button>
+      <div class="ai-note">Runs the EC Fitness AI Specialist protocol: biomechanical review → risk flags → CEX protocol → behavior stage coaching approach.</div>
     </div>
-    <div class="ai-note" style="margin-top:0.5rem;">Runs the EC Fitness AI Specialist protocol: biomechanical review → risk flags → CEX protocol → behavior stage coaching approach.</div>
   </div>
 
   <div class="ai-response" id="ai-response">
